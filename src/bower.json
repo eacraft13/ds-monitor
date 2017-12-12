@@ -1,0 +1,21 @@
+{
+  "name": "monitor",
+  "main": "index.js",
+  "homepage": "https://github.com/eacraft13/ds-monitor",
+  "authors": [
+    "eric <eacraft13@gmail.com>"
+  ],
+  "description": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "reset-css": "^2.2.1"
+  }
+}
