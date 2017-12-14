@@ -82,6 +82,46 @@ header > .main > .settings {
     top: 9px;
 }
 
+header > .main > .settings > .menu {
+    background: #FAFAFA;
+    border-radius: 16px;
+    display: none;
+    height: 122px;
+    padding: 10px 0;
+    position: absolute;
+    right: -18px;
+    top: 55px;
+    width: 123px;
+
+}
+
+header > .main > .settings > .menu:after {
+    content: '';
+    border: 9px solid transparent;
+    border-bottom-color: #FAFAFA;
+    height: 0;
+    left: 77px;
+    position: absolute;
+    top: -16px;
+    width: 0;
+}
+
+header > .main > .settings > .menu > .action {
+    margin: 0 13px 0 13px;
+    padding: 3px 0 3px 0;
+}
+
+header > .main > .settings > .menu > .title {
+    cursor: default;
+    border-bottom: 1px solid #333333;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+header > .main > .settings > .menu > .action img {
+    height: 40px;
+}
+
 header > .underbar {
     background: #246275;
     height: 12px;
