@@ -200,3 +200,13 @@ header > .underbar {
     padding-right: 10px;
     vertical-align: bottom;
 }
+
+/**
+ * Resales list
+ */
+.resales {
+    height: 700px;
+    margin: 10px auto 0;
+    overflow: hidden;
+    width: 92%;
+}
