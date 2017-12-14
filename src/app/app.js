@@ -3,5 +3,12 @@
 'use strict';
 
 $(function () {
-    console.log('Hello, World!');
+
+    /**
+     * Actions dropdown
+     */
+    $('.actions').on('click', function () {
+        $(this).find('.menu').toggle('fast');
+    });
+
 });

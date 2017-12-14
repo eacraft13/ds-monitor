@@ -6,6 +6,14 @@ a {
     text-decoration: none;
 }
 
+a:hover {
+    opacity: .5;
+}
+
+.material-icons.md-16 {
+    font-size: 16px;
+}
+
 .material-icons.md-36 {
     font-size: 36px;
 }
@@ -90,4 +98,43 @@ header > .underbar {
 
 .actions > i {
     cursor: pointer;
+}
+
+.actions > .menu {
+    background: #FAFAFA;
+    border-radius: 16px;
+    display: none;
+    height: 155px;
+    padding: 10px 0;
+    position: relative;
+    right: 12px;
+    top: 5px;
+    width: 170px;
+}
+
+.actions > .menu:after {
+    content: '';
+    border: 9px solid transparent;
+    border-bottom-color: #FAFAFA;
+    height: 0;
+    left: 20px;
+    position: absolute;
+    top: -16px;
+    width: 0;
+}
+
+.actions > .menu > .action {
+    margin: 0 13px 0 13px;
+    padding: 20px 0 5px 0;
+}
+
+.actions > .menu > .title {
+    cursor: default;
+    border-bottom: 1px solid #333333;
+    font-size: 22px;
+}
+
+.actions > .menu > .action i {
+    padding-right: 10px;
+    vertical-align: bottom;
 }
