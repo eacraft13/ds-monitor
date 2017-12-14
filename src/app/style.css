@@ -63,12 +63,34 @@ header > .main > nav > span.active {
     color: #0095b2;
 }
 
-header > .main > nav > span.active:after {
+header > .main > nav > span.leads.active:after {
     content: '';
     border: 9px solid transparent;
     border-bottom-color: #246275;
     height: 0;
     left: 263px;
+    position: absolute;
+    top: 53px;
+    width: 0;
+}
+
+header > .main > nav > span.listings.active:after {
+    content: '';
+    border: 9px solid transparent;
+    border-bottom-color: #246275;
+    height: 0;
+    left: 395px;
+    position: absolute;
+    top: 53px;
+    width: 0;
+}
+
+header > .main > nav > span.sales.active:after {
+    content: '';
+    border: 9px solid transparent;
+    border-bottom-color: #246275;
+    height: 0;
+    left: 527px;
     position: absolute;
     top: 53px;
     width: 0;
