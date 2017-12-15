@@ -18,6 +18,9 @@
   },
   "homepage": "https://github.com/eacraft13/ds-monitor#readme",
   "dependencies": {
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "lodash": "^4.17.4",
+    "request": "^2.83.0",
+    "res-error": "^0.3.1"
   }
 }
