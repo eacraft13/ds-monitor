@@ -6,6 +6,7 @@ $(function () {
 
     var $menus = $('.menu');
     var $nav = $('header nav > span');
+    var $resales = $('.resales');
 
     /**
      * Close all menus on click
@@ -20,6 +21,16 @@ $(function () {
     $nav.on('click', function () {
         $nav.removeClass('active');
         $(this).addClass('active');
+    });
+
+    $nav.filter('.listings').on('click', function () {
+        $.get('http://store.dropshipping:8011/listings')
+        .done(function (data) {
+            repopulate(data);
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            console.log('Fail on listings');
+        });
     });
 
     /**
@@ -37,5 +48,16 @@ $(function () {
         e.stopPropagation();
         $(this).find('.menu').toggle('fast');
     });
+
+    /**
+     * Repopulate resale cards
+     */
+    function repopulate(resales) {
+        $resales.empty();
+
+        $.each(resales, function (i, resale) {
+            $resales.append('<div class="resale" data-id="' + resale.resaleId + '">' + resale.createdAt + '</div>');
+        });
+    }
 
 });

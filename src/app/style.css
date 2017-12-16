@@ -164,6 +164,7 @@ header > .underbar {
 
 .actions > .menu {
     background: #FAFAFA;
+    border: 1px solid #333333;
     border-radius: 16px;
     display: none;
     height: 155px;
@@ -205,8 +206,6 @@ header > .underbar {
  * Resales list
  */
 .resales {
-    height: 700px;
     margin: 10px auto 0;
-    overflow: hidden;
     width: 92%;
 }
