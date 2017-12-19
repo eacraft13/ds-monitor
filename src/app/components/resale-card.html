@@ -13,12 +13,41 @@
             padding: 10px;
             width: 99%;
         }
+
+        :host > .component {
+            border: 1px solid #333333;
+            display: inline-block;
+            height: 130px;
+            margin: 2px;
+            padding: 2px;
+            width: 15%;
+        }
+
+        :host > #resale-desc > .link {
+            display: block;
+            text-align: center;
+        }
+
+        :host > #resale-desc > img {
+            display: block;
+            height: 100px;
+            margin: auto;
+        }
+
+        :host > #resale-desc > .title {
+            text-align: center;
+        }
     </style>
 
     <!-- Content -->
-    <div class="content">
-        <div class="id"></div>
-        <div class="createdAt"></div>
+    <div id="resale-desc" class="component">
+        <a class="link" href="" target="_blank"><span class="id"></span></a>
+        <img class="image" src="">
+        <div class="title"></div>
+    </div>
+
+    <div id="resale-price" class="component">
+        <div class="price"></div>
     </div>
 
     <script src="/components/jquery/dist/jquery.min.js" defer></script>
@@ -51,13 +80,22 @@
                         this.render(JSON.parse(responseText));
                     })
                     .catch((err) => {
+                        // todo - make card display error (maybe attribute error)
                         console.log(err);
                     });
             }
 
             render(data) {
-                $('.id', this.shadowRoot).text(data.eBayId);
-                $('.createdAt', this.shadowRoot).text(data.createdAt);
+                // desc
+                var $desc = $('#resale-desc', this.shadowRoot);
+                $desc.find('.link').attr('href', data.link);
+                $desc.find('.id').text(data.eBayId);
+                $desc.find('.image').attr('src', data.images[0]);
+                $desc.find('.title').text(data.title || 'Title');
+
+                // price
+                var $price = $('#resale-price', this.shadowRoot);
+                $price.find('.price').text(data.price);
             }
 
         }
