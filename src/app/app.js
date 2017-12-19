@@ -53,10 +53,15 @@ $(function () {
      * Repopulate resale cards
      */
     function repopulate(resales) {
+        var storeUri = 'http://store.dropshipping:8011';
+
         $resales.empty();
 
         $.each(resales, function (i, resale) {
-            $resales.append('<div class="resale" data-id="' + resale.resaleId + '">' + resale.createdAt + '</div>');
+            $resales.append(`<resale-card
+                resale-id="${resale.resaleId}"
+                store-uri="${storeUri}">
+                </resale-card>`);
         });
     }
 

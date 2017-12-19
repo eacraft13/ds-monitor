@@ -1,0 +1,68 @@
+<html>
+<template id="resale-card-template">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!-- Styles -->
+    <style>
+        :host {
+            background: #FAFAFA;
+            border-radius: 10px;
+            display: inline-block;
+            height: 140px;
+            margin: 10px;
+            padding: 10px;
+            width: 99%;
+        }
+    </style>
+
+    <!-- Content -->
+    <div class="content">
+        <div class="id"></div>
+        <div class="createdAt"></div>
+    </div>
+
+    <script src="/components/jquery/dist/jquery.min.js" defer></script>
+</template>
+
+<!-- Scripts -->
+<script>
+    (function () {
+        const currentDoc = document.currentScript.ownerDocument;
+
+        class ResaleCard extends HTMLElement {
+
+            constructor() {
+                const template = currentDoc.querySelector('#resale-card-template');
+
+                super();
+
+                this.attachShadow({ mode: 'open' });
+                this.shadowRoot.appendChild(template.content.cloneNode(true));
+            }
+
+            connectedCallback() {
+                const resaleId = this.getAttribute('resale-id');
+                const self = this;
+                const storeUri = this.getAttribute('store-uri');
+
+                fetch(`${storeUri}/resales/${resaleId}`)
+                    .then((response) => response.text())
+                    .then((responseText) => {
+                        this.render(JSON.parse(responseText));
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }
+
+            render(data) {
+                $('.id', this.shadowRoot).text(data.eBayId);
+                $('.createdAt', this.shadowRoot).text(data.createdAt);
+            }
+
+        }
+
+        window.customElements.define('resale-card', ResaleCard);
+    }());
+</script>
+</html>
