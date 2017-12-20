@@ -35,6 +35,9 @@
             margin: auto;
         }
 
+        /**
+         * Desc
+         */
         :host > #resale-desc {
             display: inline-flex;
             flex-flow: column nowrap;
@@ -46,6 +49,9 @@
             font-size: 12px;
         }
 
+        /**
+         * Price
+         */
         :host > #resale-price {
             display: inline-flex;
             flex-flow: column nowrap;
@@ -57,6 +63,23 @@
             text-align: left;
         }
 
+        /**
+         * Analytics
+         */
+        :host > #resale-analytics {
+            display: inline-flex;
+            flex-flow: column nowrap;
+            justify-content: space-evenly;
+        }
+
+        :host > #resale-analytics > * {
+            font-size: 11px;
+            text-align: left;
+        }
+
+        /**
+         * Status
+         */
         :host > #resale-status {
             cursor: pointer;
             display: inline-flex;
@@ -94,11 +117,19 @@
         <div class="supply"><span class="label">Supply Price: </span><span class="value"></span></div>
     </div>
 
+    <div id="resale-analytics" class="component">
+        <div class="time"><span class="label">Alive: </span><span class="value"></span></div>
+        <div class="visits"><span class="label">Visits: </span><span class="value"></span></div>
+        <div class="watchers"><span class="label">Watchers: </span><span class="value"></span></div>
+        <div class="sold"><span class="label">Sold: </span><span class="value"></span></div>
+    </div>
+
     <div id="resale-status" class="component">
         <div class="state"></div>
     </div>
 
     <script src="/components/jquery/dist/jquery.min.js" defer></script>
+    <script src="/components/moment/min/moment.min.js" defer></script>
 </template>
 
 <!-- Scripts -->
@@ -134,10 +165,13 @@
             }
 
             render(data) {
+                var $analytics = $('#resale-analytics', this.shadowRoot);
                 var $desc = $('#resale-desc', this.shadowRoot);
                 var $image = $('#resale-image', this.shadowRoot);
                 var $price = $('#resale-price', this.shadowRoot);
                 var $status = $('#resale-status', this.shadowRoot);
+
+                var resaleDate;
 
                 // image
                 $image.find('.image').attr('src', data.images[0]);
@@ -151,6 +185,13 @@
                 $price.find('.price > .value').text(`$${data.price.toFixed(2)}`);
                 $price.find('.snipe > .value').text(`$${data.price.toFixed(2)}`);
                 $price.find('.supply > .value').text(`$${data.price.toFixed(2)}`);
+
+                // analytics
+                resaleDate = data.dateListed[data.dateListed.length - 1].start;
+                $analytics.find('.time > .value').text(moment(resaleDate).from(moment(), true));
+                $analytics.find('.visits > .value').text(data.visits);
+                $analytics.find('.watchers > .value').text(data.watchers);
+                $analytics.find('.sold > .value').text(data.sold);
 
                 // status
                 $status.find('.state').text(data.state.toUpperCase());
