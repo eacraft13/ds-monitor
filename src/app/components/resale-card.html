@@ -57,6 +57,26 @@
             text-align: left;
         }
 
+        :host > #resale-status {
+            cursor: pointer;
+            display: inline-flex;
+            flex-flow: column nowrap;
+            justify-content: center;
+        }
+
+        :host > #resale-status:hover {
+            opacity: .7;
+        }
+
+        :host > #resale-status > * {
+            font-size: 20px;
+            text-align: center;
+        }
+
+        :host > #resale-status > .active {
+            color: green;
+        }
+
     </style>
 
     <!-- Content -->
@@ -72,6 +92,10 @@
         <div class="price"><span class="label">BIN Price: </span><span class="value"></span></div>
         <div class="snipe"><span class="label">Snipe Price: </span><span class="value"></span></div>
         <div class="supply"><span class="label">Supply Price: </span><span class="value"></span></div>
+    </div>
+
+    <div id="resale-status" class="component">
+        <div class="state"></div>
     </div>
 
     <script src="/components/jquery/dist/jquery.min.js" defer></script>
@@ -113,6 +137,7 @@
                 var $desc = $('#resale-desc', this.shadowRoot);
                 var $image = $('#resale-image', this.shadowRoot);
                 var $price = $('#resale-price', this.shadowRoot);
+                var $status = $('#resale-status', this.shadowRoot);
 
                 // image
                 $image.find('.image').attr('src', data.images[0]);
@@ -126,6 +151,10 @@
                 $price.find('.price > .value').text(`$${data.price.toFixed(2)}`);
                 $price.find('.snipe > .value').text(`$${data.price.toFixed(2)}`);
                 $price.find('.supply > .value').text(`$${data.price.toFixed(2)}`);
+
+                // status
+                $status.find('.state').text(data.state.toUpperCase());
+                $status.find('.state').addClass(data.state.toLowerCase());
             }
 
         }
