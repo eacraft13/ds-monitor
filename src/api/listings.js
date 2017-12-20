@@ -97,6 +97,7 @@ router.patch('/refresh', function (req, res) {
                 state: listing.sellingStatus[0].sellingState[0],
                 supplies: [],
                 tax: null,
+                title: listing.title[0],
                 visits: null,
                 watchers: listing.listingInfo[0].watchCount ? listing.listingInfo[0].watchCount[0] : 0
             };
@@ -104,29 +105,31 @@ router.patch('/refresh', function (req, res) {
     })
     .then(function (listings) {
         return _.map(listings, function (listing) {
-            return new Promise(function (reject, resolve) {
-                request({
-                    body: listing,
-                    json: true,
-                    method: 'post',
-                    uri: 'http://' + config.uri + ':' + config.port + '/listings',
-                }, function (err, res, body) {
-                    if (err)
-                        return reject(new Error(err));
+            return function () {
+                return new Promise(function (reject, resolve) {
+                    request({
+                        body: listing,
+                        json: true,
+                        method: 'post',
+                        uri: 'http://' + config.uri + ':' + config.port + '/listings',
+                    }, function (err, res, body) {
+                        if (err)
+                            return reject(new Error(err));
 
-                    if (res.statusCode !== 201 && res.statusCode !== 204)
-                        return reject(new Error(res.errorMessage));
+                        if (res.statusCode !== 201 && res.statusCode !== 204)
+                            return reject(new Error(res.errorMessage));
 
-                    return resolve(body);
+                        return resolve(body);
+                    });
                 });
-            });
+            };
         });
     })
     .then(function (promises) {
         return Promise.all(promises);
     })
     .then(function (result) {
-        return res.json(result);
+        return res.status(204).json(result);
     })
     .catch(function (err) {
         return res.error(err);
