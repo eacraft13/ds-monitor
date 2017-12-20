@@ -2,13 +2,12 @@
 <template id="resale-card-template">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-    <!-- Styles -->
     <style>
         :host {
             background: #FAFAFA;
             border-radius: 10px;
             display: inline-block;
-            height: 140px;
+            height: 100%;
             margin: 2px;
             padding: 2px;
             width: 96.3%;
@@ -24,10 +23,30 @@
             margin: 2px;
             opacity: 0;
             padding: 2px;
+            position: relative;
             vertical-align: top;
             width: 130px;
         }
 
+        :host > .component:not(#resale-refresh):hover::after {
+            color: #FC5A5D;
+            content: 'description';
+            cursor: pointer;
+            font-family: 'Material Icons';
+            font-size: 40px;
+            left: 104px;
+            position: absolute;
+            top: -6px;
+        }
+
+        :host > #more-info {
+            height: 300px;
+            width: 100%;
+        }
+
+        /**
+         * Image
+         */
         :host > #resale-image > .image {
             border-radius: inherit;
             display: block;
@@ -83,26 +102,25 @@
          */
         :host > #resale-refresh {
             align-items: center;
-            cursor: pointer;
             display: inline-flex;
             justify-content: center;
         }
 
-        :host > #resale-refresh:hover {
-            opacity: .7;
-        }
-
         :host > #resale-refresh > i {
+            cursor: pointer;
             font-size: 70px;
         }
 
+        :host > #resale-refresh > i:hover {
+            opacity: .7;
+        }
     </style>
 
-    <!-- Content -->
     <div id="resale-image" class="component">
         <img class="image" src="">
         <!-- other images -->
     </div>
+
     <div id="resale-desc" class="component">
         <div class="title"></div>
         <div class="link"><a href="" target="_blank"></a></div>
@@ -170,11 +188,12 @@
         <!-- freshness meter -->
     </div>
 
+    <div id="more-info" style="display:none;"></div>
+
     <script src="/components/jquery/dist/jquery.min.js" defer></script>
     <script src="/components/moment/min/moment.min.js" defer></script>
 </template>
 
-<!-- Scripts -->
 <script>
     (function () {
         const currentDoc = document.currentScript.ownerDocument;
@@ -207,51 +226,103 @@
             }
 
             render(data) {
-                var $desc = $('#resale-desc', this.shadowRoot);
-                var $image = $('#resale-image', this.shadowRoot);
-                var $hotness = $('#resale-hotness', this.shadowRoot);
-                var $profit = $('#resale-profit', this.shadowRoot);
-                var $status = $('#resale-status', this.shadowRoot);
-
-                var resaleDate;
+                var $components = $('.component', this.shadowRoot);
+                var $more = $('#more-info', this.shadowRoot);
                 var self = this;
 
-                // image
-                $image.find('.image').attr('src', data.images[0]);
+                this.renderImage(data);
+                this.renderDesc(data);
+                this.renderPrice(data);
+                this.renderShipping(data);
+                this.renderProfit(data);
+                this.renderSnipe(data);
+                this.renderSupply(data);
+                this.renderHotness(data);
+                this.renderRefresh(data);
 
-                // desc
+                $components.on('click', function (e) {
+                    var $this = $(this);
+
+                    if (
+                        e.clientX > $this.offset().left + 104 &&
+                        e.clientY > $this.offset().top - 6 &&
+                        e.clientY < $this.offset().top - 6 + 40
+                    ) {
+                        if ($more.is(':visible'))
+                            $more.slideUp('fast').delay('201').empty();
+
+                        setTimeout(function () { // waiting ensures content isn't changed before slideUp occurs
+                            self.renderMoreInfo($this.attr('id'), data);
+                        }, 201);
+
+                        $more.slideDown();
+                    }
+                });
+
+                // Ease in components to prevent FOUC
+                setTimeout(function() {
+                    $components.each(function () {
+                        $(this).animate({ opacity: 1 }, Math.random() * 500 + 200, 'swing');
+                    });
+                }, 500);
+            }
+
+            renderImage(data) {
+                var $image = $('#resale-image', this.shadowRoot);
+
+                $image.find('.image').attr('src', data.images[0]);
+            }
+
+            renderDesc(data) {
+                var $desc = $('#resale-desc', this.shadowRoot);
+
                 $desc.find('.title').text(data.title || 'N/a');
                 $desc.find('.link > a').attr('href', data.link);
                 $desc.find('.link > a').text(data.eBayId);
+            }
 
-                // price
+            renderPrice(data) {
 
-                // shipping
+            }
 
-                // profit
+            renderShipping(data) {
+
+            }
+
+            renderProfit(data) {
+                var $profit = $('#resale-profit', this.shadowRoot);
+
                 $profit.find('.price > .value').text(`$${data.price.toFixed(2)}`);
                 $profit.find('.snipe > .value').text(`$${data.price.toFixed(2)}`);
                 $profit.find('.supply > .value').text(`$${data.price.toFixed(2)}`);
+            }
 
-                // snipe
+            renderSnipe(data) {
 
-                // supply
+            }
 
-                // hotness
-                resaleDate = data.dateListed[data.dateListed.length - 1].start;
+            renderSupply(data) {
+
+            }
+
+            renderHotness(data) {
+                var $hotness = $('#resale-hotness', this.shadowRoot);
+                var resaleDate = data.dateListed[data.dateListed.length - 1].start;
+
                 $hotness.find('.time > .value').text(moment(resaleDate).from(moment(), true));
                 $hotness.find('.visits > .value').text(data.visits);
                 $hotness.find('.watchers > .value').text(data.watchers);
                 $hotness.find('.sold > .value').text(data.sold);
+            }
 
-                // refresh
+            renderRefresh(data) {
 
-                // Ease in components to prevent FOUC
-                setTimeout(function() {
-                    $('.component', self.shadowRoot).each(function () {
-                        $(this).animate({ opacity: 1 }, Math.random() * 500 + 200, 'swing');
-                    });
-                }, 500);
+            }
+
+            renderMoreInfo(section, data) {
+                var $more = $('#more-info', this.shadowRoot);
+
+                $more.text(section);
             }
 
         }
