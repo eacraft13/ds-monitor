@@ -11,7 +11,12 @@
             height: 140px;
             margin: 2px;
             padding: 2px;
-            width: 99%;
+            width: 96.3%;
+        }
+
+        :host > .component:not(:defined) {
+            opacity: 0;
+            transition: opacity 3.3s ease-in-out;
         }
 
         :host > .component {
@@ -22,6 +27,7 @@
             display: inline-block;
             height: 130px;
             margin: 2px;
+            opacity: 0;
             padding: 2px;
             vertical-align: top;
             width: 130px;
@@ -100,6 +106,24 @@
             color: green;
         }
 
+        /**
+         * Refresh
+         */
+        :host > #resale-refresh {
+            align-items: center;
+            cursor: pointer;
+            display: inline-flex;
+            justify-content: center;
+        }
+
+        :host > #resale-refresh:hover {
+            opacity: .7;
+        }
+
+        :host > #resale-refresh > i {
+            font-size: 70px;
+        }
+
     </style>
 
     <!-- Content -->
@@ -117,6 +141,12 @@
         <div class="supply"><span class="label">Supply Price: </span><span class="value"></span></div>
     </div>
 
+    <div id="resale-profit" class="component">Profit</div>
+
+    <div id="resale-snipe" class="component">Snipe</div>
+
+    <div id="resale-supply" class="component">Supply</div>
+
     <div id="resale-analytics" class="component">
         <div class="time"><span class="label">Alive: </span><span class="value"></span></div>
         <div class="visits"><span class="label">Visits: </span><span class="value"></span></div>
@@ -126,6 +156,10 @@
 
     <div id="resale-status" class="component">
         <div class="state"></div>
+    </div>
+
+    <div id="resale-refresh" class="component">
+        <i class="material-icons">replay</i>
     </div>
 
     <script src="/components/jquery/dist/jquery.min.js" defer></script>
@@ -172,6 +206,7 @@
                 var $status = $('#resale-status', this.shadowRoot);
 
                 var resaleDate;
+                var self = this;
 
                 // image
                 $image.find('.image').attr('src', data.images[0]);
@@ -196,6 +231,11 @@
                 // status
                 $status.find('.state').text(data.state.toUpperCase());
                 $status.find('.state').addClass(data.state.toLowerCase());
+
+                // Ease in components to prevent FOUC
+                setTimeout(function() {
+                    $('.component', self.shadowRoot).animate({ opacity: 1 }, 500, 'swing');
+                }, 500);
             }
 
         }
