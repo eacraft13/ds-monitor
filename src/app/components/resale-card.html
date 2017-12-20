@@ -16,44 +16,62 @@
 
         :host > .component {
             border-radius: 10px;
+            box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0 3px 14px 2px rgba(0, 0, 0, 0.12),
+                0 5px 5px -3px rgba(0, 0, 0, 0.4);
             display: inline-block;
             height: 130px;
             margin: 2px;
             padding: 2px;
+            vertical-align: top;
             width: 130px;
-
-            box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
-                0 3px 14px 2px rgba(0, 0, 0, 0.12),
-                0 5px 5px -3px rgba(0, 0, 0, 0.4);
         }
 
-        :host > #resale-desc > .title {
-            text-align: center;
-            font-size: 12px;
-        }
-
-        :host > #resale-desc > img {
+        :host > #resale-image > .image {
+            border-radius: inherit;
             display: block;
-            height: 100px;
+            max-height: 100%;
+            max-width: 100%;
             margin: auto;
         }
 
-        :host > #resale-desc > .link {
-            display: block;
-            font-size: 12px;
-            text-align: center;
+        :host > #resale-desc {
+            display: inline-flex;
+            flex-flow: column nowrap;
+            justify-content: space-around;
         }
+
+        :host > #resale-desc > * {
+            text-align: center;
+            font-size: 12px;
+        }
+
+        :host > #resale-price {
+            display: inline-flex;
+            flex-flow: column nowrap;
+            justify-content: space-around;
+        }
+
+        :host > #resale-price > * {
+            font-size: 11px;
+            text-align: left;
+        }
+
     </style>
 
     <!-- Content -->
+    <div id="resale-image" class="component">
+        <img class="image" src="">
+    </div>
     <div id="resale-desc" class="component">
         <div class="title"></div>
-        <img class="image" src="">
-        <a class="link" href="" target="_blank"><span class="id"></span></a>
+        <div class="link"><a href="" target="_blank"></a></div>
     </div>
 
     <div id="resale-price" class="component">
-        <div class="price"></div>
+        <div class="price"><span class="label">BIN Price: </span><span class="value"></span></div>
+        <div class="snipe"><span class="label">Snipe Price: </span><span class="value"></span></div>
+        <div class="supply"><span class="label">Supply Price: </span><span class="value"></span></div>
     </div>
 
     <script src="/components/jquery/dist/jquery.min.js" defer></script>
@@ -92,16 +110,22 @@
             }
 
             render(data) {
-                // desc
                 var $desc = $('#resale-desc', this.shadowRoot);
-                $desc.find('.link').attr('href', data.link);
-                $desc.find('.id').text(data.eBayId);
-                $desc.find('.image').attr('src', data.images[0]);
-                $desc.find('.title').text(data.title || 'Title');
+                var $image = $('#resale-image', this.shadowRoot);
+                var $price = $('#resale-price', this.shadowRoot);
+
+                // image
+                $image.find('.image').attr('src', data.images[0]);
+
+                // desc
+                $desc.find('.title').text(data.title || 'N/a');
+                $desc.find('.link > a').attr('href', data.link);
+                $desc.find('.link > a').text(data.eBayId);
 
                 // price
-                var $price = $('#resale-price', this.shadowRoot);
-                $price.find('.price').text(data.price);
+                $price.find('.price > .value').text(`$${data.price.toFixed(2)}`);
+                $price.find('.snipe > .value').text(`$${data.price.toFixed(2)}`);
+                $price.find('.supply > .value').text(`$${data.price.toFixed(2)}`);
             }
 
         }
