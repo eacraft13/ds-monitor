@@ -14,11 +14,6 @@
             width: 96.3%;
         }
 
-        :host > .component:not(:defined) {
-            opacity: 0;
-            transition: opacity 3.3s ease-in-out;
-        }
-
         :host > .component {
             border-radius: 10px;
             box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
@@ -56,54 +51,31 @@
         }
 
         /**
-         * Price
+         * Profit
          */
-        :host > #resale-price {
+        :host > #resale-profit {
             display: inline-flex;
             flex-flow: column nowrap;
             justify-content: space-around;
         }
 
-        :host > #resale-price > * {
+        :host > #resale-profit > * {
             font-size: 11px;
             text-align: left;
         }
 
         /**
-         * Analytics
+         * Hotness
          */
-        :host > #resale-analytics {
+        :host > #resale-hotness {
             display: inline-flex;
             flex-flow: column nowrap;
             justify-content: space-evenly;
         }
 
-        :host > #resale-analytics > * {
+        :host > #resale-hotness > * {
             font-size: 11px;
             text-align: left;
-        }
-
-        /**
-         * Status
-         */
-        :host > #resale-status {
-            cursor: pointer;
-            display: inline-flex;
-            flex-flow: column nowrap;
-            justify-content: center;
-        }
-
-        :host > #resale-status:hover {
-            opacity: .7;
-        }
-
-        :host > #resale-status > * {
-            font-size: 20px;
-            text-align: center;
-        }
-
-        :host > #resale-status > .active {
-            color: green;
         }
 
         /**
@@ -129,37 +101,73 @@
     <!-- Content -->
     <div id="resale-image" class="component">
         <img class="image" src="">
+        <!-- other images -->
     </div>
     <div id="resale-desc" class="component">
         <div class="title"></div>
         <div class="link"><a href="" target="_blank"></a></div>
+        <!-- item specifics -->
+        <!-- status (de-activate listing) -->
     </div>
 
     <div id="resale-price" class="component">
+        Price
+        <!-- quantity -->
+        <!-- tax -->
+        <!-- shipping cost -->
+    </div>
+
+    <div id="resale-shipping" class="component">
+        Shipping
+        <!-- shipping time/service -->
+        <!-- handling time -->
+    </div>
+
+    <div id="resale-profit" class="component">
         <div class="price"><span class="label">BIN Price: </span><span class="value"></span></div>
         <div class="snipe"><span class="label">Snipe Price: </span><span class="value"></span></div>
         <div class="supply"><span class="label">Supply Price: </span><span class="value"></span></div>
+        <!-- eBay fee -->
+        <!-- PayPal fee -->
+        <!-- profit -->
+        <!-- profit % -->
+        <!-- undercut $ -->
+        <!-- undercut % -->
     </div>
 
-    <div id="resale-profit" class="component">Profit</div>
+    <div id="resale-snipe" class="component">
+        Snipe
+        <!-- price -->
+        <!-- tax -->
+        <!-- shipping -->
+        <!-- total (price + tax + shipping) -->
+        <!-- handling time + shipping time -->
+        <!-- # sold (past n days) -->
+    </div>
 
-    <div id="resale-snipe" class="component">Snipe</div>
+    <div id="resale-supply" class="component">
+        Supply
+        <!-- price -->
+        <!-- tax -->
+        <!-- shipping -->
+        <!-- shipping time -->
+        <!-- # available -->
+    </div>
 
-    <div id="resale-supply" class="component">Supply</div>
-
-    <div id="resale-analytics" class="component">
+    <div id="resale-hotness" class="component">
         <div class="time"><span class="label">Alive: </span><span class="value"></span></div>
         <div class="visits"><span class="label">Visits: </span><span class="value"></span></div>
         <div class="watchers"><span class="label">Watchers: </span><span class="value"></span></div>
         <div class="sold"><span class="label">Sold: </span><span class="value"></span></div>
-    </div>
-
-    <div id="resale-status" class="component">
-        <div class="state"></div>
+        <!-- hotness meter -->
+        <!-- total profit -->
+        <!-- total profit / day -->
     </div>
 
     <div id="resale-refresh" class="component">
         <i class="material-icons">replay</i>
+        <!-- last updated time -->
+        <!-- freshness meter -->
     </div>
 
     <script src="/components/jquery/dist/jquery.min.js" defer></script>
@@ -199,10 +207,10 @@
             }
 
             render(data) {
-                var $analytics = $('#resale-analytics', this.shadowRoot);
                 var $desc = $('#resale-desc', this.shadowRoot);
                 var $image = $('#resale-image', this.shadowRoot);
-                var $price = $('#resale-price', this.shadowRoot);
+                var $hotness = $('#resale-hotness', this.shadowRoot);
+                var $profit = $('#resale-profit', this.shadowRoot);
                 var $status = $('#resale-status', this.shadowRoot);
 
                 var resaleDate;
@@ -217,24 +225,32 @@
                 $desc.find('.link > a').text(data.eBayId);
 
                 // price
-                $price.find('.price > .value').text(`$${data.price.toFixed(2)}`);
-                $price.find('.snipe > .value').text(`$${data.price.toFixed(2)}`);
-                $price.find('.supply > .value').text(`$${data.price.toFixed(2)}`);
 
-                // analytics
+                // shipping
+
+                // profit
+                $profit.find('.price > .value').text(`$${data.price.toFixed(2)}`);
+                $profit.find('.snipe > .value').text(`$${data.price.toFixed(2)}`);
+                $profit.find('.supply > .value').text(`$${data.price.toFixed(2)}`);
+
+                // snipe
+
+                // supply
+
+                // hotness
                 resaleDate = data.dateListed[data.dateListed.length - 1].start;
-                $analytics.find('.time > .value').text(moment(resaleDate).from(moment(), true));
-                $analytics.find('.visits > .value').text(data.visits);
-                $analytics.find('.watchers > .value').text(data.watchers);
-                $analytics.find('.sold > .value').text(data.sold);
+                $hotness.find('.time > .value').text(moment(resaleDate).from(moment(), true));
+                $hotness.find('.visits > .value').text(data.visits);
+                $hotness.find('.watchers > .value').text(data.watchers);
+                $hotness.find('.sold > .value').text(data.sold);
 
-                // status
-                $status.find('.state').text(data.state.toUpperCase());
-                $status.find('.state').addClass(data.state.toLowerCase());
+                // refresh
 
                 // Ease in components to prevent FOUC
                 setTimeout(function() {
-                    $('.component', self.shadowRoot).animate({ opacity: 1 }, 500, 'swing');
+                    $('.component', self.shadowRoot).each(function () {
+                        $(this).animate({ opacity: 1 }, Math.random() * 500 + 200, 'swing');
+                    });
                 }, 500);
             }
 
