@@ -9,52 +9,40 @@ var express = require('express'),
 var request = require('request');
 
 // eBay api payload
-// {
-//     "itemId":["292365480201"],
-//     "title":["New Oversize Embroidered Western Texas Lone Star Bedding Comforter Set."],
-//     "globalId":["EBAY-US"],
-//     "primaryCategory":[{
-//         "categoryId":["45462"],
-//         "categoryName":["Comforters & Sets"]}
-//     ],
-//     "galleryURL":["http://thumbs1.ebaystatic.com/pict/04040_0.jpg"],
-//     "viewItemURL":["http://www.ebay.com/itm/New-Oversize-Embroidered-Western-Texas-Lone-Star-Bedding-Comforter-Set-/292365480201?var=0"],
-//     "paymentMethod":["PayPal"],
-//     "autoPay":["true"],
-//     "postalCode":["52338"],
-//     "location":["Swisher, IA, USA"],
-//     "country":["US"],
-//     "shippingInfo":[{
-//         "shippingServiceCost":[{"@currencyId":"USD", "__value__":"0.0"}],
-//         "shippingType":["Free"],
-//         "shipToLocations":["Worldwide"],
-//         "expeditedShipping":["true"],
-//         "oneDayShippingAvailable":["false"],
-//         "handlingTime":["3"]
-//     }],
-//     "sellingStatus":[{
-//         "currentPrice":[{"@currencyId":"USD","__value__":"111.51"}],
-//         "convertedCurrentPrice":[{"@currencyId":"USD","__value__":"111.51"}],
-//         "sellingState":["Active"],
-//         "timeLeft":["P24DT11H2M6S"]
-//     }],
-//     "listingInfo":[{
-//         "bestOfferEnabled":["false"],
-//         "buyItNowAvailable":["false"],
-//         "startTime":["2017-12-11T01:17:35.000Z"],
-//         "endTime":["2018-01-09T13:17:35.000Z"],
-//         "listingType":["FixedPrice"],
-//         "gift":["false"],
-//         "watchCount":["2"]
-//     }],
-//     "returnsAccepted":["true"],
-//     "condition":[{
-//         "conditionId":["1000"],
-//         "conditionDisplayName":["New with tags"]
-//     }],
-//     "isMultiVariationListing":["true"],
-//     "topRatedListing":["false"]
-// }
+// { itemId: [ '292361418400' ],
+//   title: [ 'Camouflage Realtree Bedding Comforter Set w/SHAMS Camo Twin Full Queen King NEW' ],
+//   globalId: [ 'EBAY-US' ],
+//   primaryCategory: [ { categoryId: [Object], categoryName: [Object] } ],
+//   galleryURL: [ 'http://thumbs1.ebaystatic.com/pict/2923614184004040_1.jpg' ],
+//   viewItemURL: [ 'http://www.ebay.com/itm/Camouflage-Realtree-Bedding-Comforter-Set-w-SHAMS-Camo-Twin-Full-Queen-King-NEW-/292361418400?var=591247384991' ],
+//   paymentMethod: [ 'PayPal' ],
+//   autoPay: [ 'true' ],
+//   postalCode: [ '52338' ],
+//   location: [ 'Swisher,IA,USA' ],
+//   country: [ 'US' ],
+//   shippingInfo:
+//    [ { shippingServiceCost: [Object],
+//        shippingType: [Object],
+//        shipToLocations: [Object],
+//        expeditedShipping: [Object],
+//        oneDayShippingAvailable: [Object],
+//        handlingTime: [Object] } ],
+//   sellingStatus:
+//    [ { currentPrice: [Object],
+//        convertedCurrentPrice: [Object],
+//        sellingState: [Object],
+//        timeLeft: [Object] } ],
+//   listingInfo:
+//    [ { bestOfferEnabled: [Object],
+//        buyItNowAvailable: [Object],
+//        startTime: [Object],
+//        endTime: [Object],
+//        listingType: [Object],
+//        gift: [Object] } ],
+//   returnsAccepted: [ 'true' ],
+//   condition: [ { conditionId: [Object], conditionDisplayName: [Object] } ],
+//   isMultiVariationListing: [ 'true' ],
+//   topRatedListing: [ 'false' ] }
 
 
 /**
