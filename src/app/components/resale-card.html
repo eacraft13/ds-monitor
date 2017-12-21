@@ -33,8 +33,8 @@
             content: 'description';
             cursor: pointer;
             font-family: 'Material Icons';
-            font-size: 40px;
-            left: 104px;
+            font-size: 32px;
+            left: 110px;
             position: absolute;
             top: -6px;
         }
@@ -133,6 +133,46 @@
 
         :host > #resale-price > .variable > .label {
             font-size: 7px;
+        }
+
+        /**
+         * Shipping
+         */
+        :host > #resale-shipping {
+            display: inline-flex;
+            flex-flow: column nowrap;
+            font-size: 10px;
+            justify-content: center;
+        }
+
+        :host > #resale-shipping > div {
+            margin: 2px;
+        }
+
+        :host > #resale-shipping .label,
+        :host > #resale-shipping .value {
+            display: inline-block;
+        }
+
+        :host > #resale-shipping > div > .label {
+            text-align: right;
+            width: 50%;
+        }
+
+        :host > #resale-shipping > div > .value {
+            text-align: right;
+            width: 45%;
+        }
+
+        :host > #resale-shipping > .estimated-arrival {
+            font-size: 12px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        :host > #resale-shipping > .estimated-arrival > .min,
+        :host > #resale-shipping > .estimated-arrival > .max {
+            font-weight: bold;
         }
 
         /**
@@ -250,10 +290,22 @@
     </div>
 
     <div id="resale-shipping" class="component">
-        <!-- cost -->
-        <!-- service & timeframe -->
-        <!-- handling time -->
-        <!-- estimated arrival -->
+        <div class="cost">
+            <div class="label">Cost</div>:
+            <div class="value"></div>
+        </div>
+        <div class="service">
+            <div class="label"></div>:
+            <div class="value"></div>
+        </div>
+        <div class="handling-time">
+            <div class="label">Handling</div>:
+            <div class="value"></div>
+        </div>
+
+        <div class="estimated-arrival">
+            Between <span class="min"></span> and <span class="max"></span>.
+        </div>
 
         <!-- More -->
         <!-- is global -->
@@ -372,9 +424,9 @@
                     var $this = $(this);
 
                     if (
-                        e.clientX > $this.offset().left + 104 &&
+                        e.clientX > $this.offset().left + 110 &&
                         e.clientY > $this.offset().top - 6 &&
-                        e.clientY < $this.offset().top - 6 + 40
+                        e.clientY < $this.offset().top - 6 + 32
                     ) {
                         if ($more.is(':visible'))
                             $more.slideUp('fast').delay('201').empty();
@@ -429,7 +481,27 @@
             }
 
             renderShipping(data) {
+                var $ship = $('#resale-shipping', this.shadowRoot);
+                var service;
 
+                if (data.shipping.estimatedDelivery.max === 3)
+                    service = 'Expedited';
+                else
+                    service = 'Standard';
+
+                $ship.find('.cost > .value').text(`$${data.shipping.cost.toFixed(2)}`);
+
+                $ship.find('.service > .label').text(service);
+                $ship.find('.service > .value').text(`1 to ${data.shipping.estimatedDelivery.max} days`);
+
+                $ship.find('.handling-time > .value').text(`${data.shipping.handlingTime} days`);
+
+                $ship.find('.estimated-arrival > .min').text(
+                    moment().add(data.shipping.estimatedDelivery.min, 'days').format('ddd, Do')
+                );
+                $ship.find('.estimated-arrival > .max').text(
+                    moment().add(data.shipping.estimatedDelivery.max, 'days').format('ddd, Do')
+                );
             }
 
             renderProfit(data) {

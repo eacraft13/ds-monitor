@@ -9,46 +9,66 @@ var express = require('express'),
 var request = require('request');
 
 // eBay api payload
-// { itemId: [ '292361418400' ],
-//   title: [ 'Camouflage Realtree Bedding Comforter Set w/SHAMS Camo Twin Full Queen King NEW' ],
-//   globalId: [ 'EBAY-US' ],
-//   primaryCategory: [ { categoryId: [Object], categoryName: [Object] } ],
-//   galleryURL: [ 'http://thumbs1.ebaystatic.com/pict/2923614184004040_1.jpg' ],
-//   viewItemURL: [ 'http://www.ebay.com/itm/Camouflage-Realtree-Bedding-Comforter-Set-w-SHAMS-Camo-Twin-Full-Queen-King-NEW-/292361418400?var=591247384991' ],
-//   paymentMethod: [ 'PayPal' ],
-//   autoPay: [ 'true' ],
-//   postalCode: [ '52338' ],
-//   location: [ 'Swisher,IA,USA' ],
-//   country: [ 'US' ],
-//   shippingInfo:
-//    [ { shippingServiceCost: [Object],
-//        shippingType: [Object],
-//        shipToLocations: [Object],
-//        expeditedShipping: [Object],
-//        oneDayShippingAvailable: [Object],
-//        handlingTime: [Object] } ],
-//   sellingStatus:
-//    [ { currentPrice: [Object],
-//        convertedCurrentPrice: [Object],
-//        sellingState: [Object],
-//        timeLeft: [Object] } ],
-//   listingInfo:
-//    [ { bestOfferEnabled: [Object],
-//        buyItNowAvailable: [Object],
-//        startTime: [Object],
-//        endTime: [Object],
-//        listingType: [Object],
-//        gift: [Object] } ],
-//   returnsAccepted: [ 'true' ],
-//   condition: [ { conditionId: [Object], conditionDisplayName: [Object] } ],
-//   isMultiVariationListing: [ 'true' ],
-//   topRatedListing: [ 'false' ] }
+// {
+//     "itemId":["292365480201"],
+//     "title":["New Oversize Embroidered Western Texas Lone Star Bedding Comforter Set."],
+//     "globalId":["EBAY-US"],
+//     "primaryCategory":[{
+//         "categoryId":["45462"],
+//         "categoryName":["Comforters & Sets"]
+//     }],
+//     "galleryURL":["http://thumbs2.ebaystatic.com/pict/292365480201404000000001_1.jpg"],
+//     "viewItemURL":["http://www.ebay.com/itm/New-Oversize-Embroidered-Western-Texas-Lone-Star-Bedding-Comforter-Set-/292365480201?var=591249780274"],
+//     "paymentMethod":["PayPal"],
+//     "autoPay":["true"],
+//     "postalCode":["52338"],
+//     "location":["Swisher,IA,USA"],
+//     "country":["US"],
+//     "shippingInfo":[{
+//         "shippingServiceCost":[{
+//             "@currencyId":"USD",
+//             "__value__":"0.0"
+//         }],
+//         "shippingType":["Free"],
+//         "shipToLocations":["Worldwide"],
+//         "expeditedShipping":["true"],
+//         "oneDayShippingAvailable":["false"],
+//         "handlingTime":["3"]
+//     }],
+//     "sellingStatus":[{
+//         "currentPrice":[{
+//             "@currencyId":"USD",
+//             "__value__":"166.37"
+//         }],
+//         "convertedCurrentPrice":[{
+//             "@currencyId":"USD",
+//             "__value__":"166.37"
+//         }],
+//         "sellingState":["Active"],
+//         "timeLeft":["P18DT16H59M7S"]
+//     }],
+//     "listingInfo":[{
+//         "bestOfferEnabled":["false"],
+//         "buyItNowAvailable":["false"],
+//         "startTime":["2017-12-10T13:17:35.000Z"],
+//         "endTime":["2018-01-09T13:17:35.000Z"],
+//         "listingType":["FixedPrice"],
+//         "gift":["false"],
+//         "watchCount":["1"]
+//     }],
+//     "returnsAccepted":["true"],
+//     "condition":[{
+//         "conditionId":["1000"],
+//         "conditionDisplayName":["New with tags"]
+//     }],
+//     "isMultiVariationListing":["true"],
+//     "topRatedListing":["false"]
+// }
 
 
 /**
  * Refresh listing(s)
  */
-// todo: should be patch and body should contain resale ids to refresh (with 'all' option) - if passing resaleIds, then move out of /listings/refresh and just do /refresh
 router.patch('/refresh', function (req, res) {
     ebay.finding
     .findItemsIneBayStores({
@@ -73,12 +93,12 @@ router.patch('/refresh', function (req, res) {
                 shipping: {
                     cost: listing.shippingInfo[0].shippingServiceCost[0].__value__,
                     estimatedDelivery: {
-                        max: +listing.shippingInfo[0].handlingTime + listing.shippingInfo[0].expeditedShipping === 'true' ? 3 : 5,
-                        min: +listing.shippingInfo[0].handlingTime
+                        max: +listing.shippingInfo[0].handlingTime[0] + listing.shippingInfo[0].expeditedShipping === 'true' ? 3 : 5,
+                        min: +listing.shippingInfo[0].handlingTime[0] + listing.shippingInfo[0].expeditedShipping === 'true' ? 1 : 3,
                     },
                     handlingTime: listing.shippingInfo[0].handlingTime[0],
                     isGlobal: listing.shippingInfo[0].shipToLocations[0] === 'Worldwide',
-                    service: listing.shippingInfo[0].shippingType[0]
+                    service: listing.shippingInfo[0].shippingType[0].replace(/([a-z])([A-Z])/g, '$1 $2'),
                 },
                 snipes: [],
                 sold: null,
