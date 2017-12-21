@@ -49,6 +49,19 @@ $(function () {
         $(this).find('.menu').toggle('fast');
     });
 
+    $('.actions .action.refresh').on('click', function (e) {
+        $.ajax({
+            url: '/listings/refresh',
+            method: 'patch'
+        })
+        .done(function () {
+            $nav.filter('.listings').click();
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            console.log('Failed refresh');
+        });
+    });
+
     /**
      * Repopulate resale cards
      */

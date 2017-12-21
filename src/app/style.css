@@ -37,6 +37,7 @@ body {
     color: #333333;
     font-family: 'Montserrat', sans-serif;
     font-size: 16px;
+    position: relative;
 }
 
 header > .main {
@@ -156,6 +157,7 @@ header > .underbar {
     position: fixed;
     top: 98px;
     left: 18px;
+    z-index: 1;
 }
 
 .actions > i {
@@ -187,6 +189,7 @@ header > .underbar {
 }
 
 .actions > .menu > .action {
+    cursor: pointer;
     margin: 0 13px 0 13px;
     padding: 20px 0 5px 0;
 }
