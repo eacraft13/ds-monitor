@@ -96,6 +96,46 @@
         }
 
         /**
+         * Price
+         */
+        :host > #resale-price {
+            font-size: 11px;
+        }
+
+        :host > #resale-price > .divide {
+            border-bottom: 1px solid #333333;
+        }
+
+        :host > #resale-price > div {
+            margin: 4px;
+        }
+
+        :host > #resale-price > div:first-child {
+            margin-top: 14px;
+        }
+
+        :host > #resale-price > div > div {
+            display: inline-block;
+        }
+
+        :host > #resale-price > .variable > .icon {
+            width: 10%;
+        }
+
+        :host > #resale-price > .variable > .icon > i {
+            font-size: 11px;
+        }
+
+        :host > #resale-price > .variable > .value {
+            text-align: right;
+            width: 55%;
+        }
+
+        :host > #resale-price > .variable > .label {
+            font-size: 7px;
+        }
+
+        /**
          * Profit
          */
         :host > #resale-profit {
@@ -165,12 +205,45 @@
     <div id="resale-price" class="component">
         <!-- Might be able to remove this one -->
 
-        <!-- price -->
-        <!-- tax -->
-        <!-- shipping cost -->
-        <!-- total -->
-        <!-- quantity -->
-        <!-- sum total -->
+        <div class="price variable">
+            <div class="icon"></div>
+            <div class="value"></div>
+            <div class="label">Price</div>
+        </div>
+
+        <div class="tax variable">
+            <div class="icon"><i class="material-icons">add</i></div>
+            <div class="value"></div>
+            <div class="label">Tax</div>
+        </div>
+
+        <div class="shipping variable">
+            <div class="icon"><i class="material-icons">add</i></div>
+            <div class="value"></div>
+            <div class="label">Shipping</div>
+        </div>
+
+        <div class="divide"></div>
+
+        <div class="total variable">
+            <div class="icon"></div>
+            <div class="value"></div>
+            <div class="label"></div>
+        </div>
+
+        <div class="quantity variable">
+            <div class="icon"><i class="material-icons">clear</i></div>
+            <div class="value"></div>
+            <div class="label">Quantity</div>
+        </div>
+
+        <div class="divide"></div>
+
+        <div class="sum variable">
+            <div class="icon"></div>
+            <div class="value"></div>
+            <div class="label"></div>
+        </div>
 
         <!-- More -->
         <!-- reprice -->
@@ -181,6 +254,10 @@
         <!-- service & timeframe -->
         <!-- handling time -->
         <!-- estimated arrival -->
+
+        <!-- More -->
+        <!-- is global -->
+        <!-- doesn't ship to -->
     </div>
 
     <div id="resale-profit" class="component">
@@ -335,7 +412,20 @@
             }
 
             renderPrice(data) {
+                var $desc = $('#resale-price', this.shadowRoot);
 
+                $desc.find('.price > .value').text(`$${data.price.toFixed(2)}`);
+                $desc.find('.tax > .value').text(`$${data.tax.toFixed(2)}`);
+                $desc.find('.shipping > .value').text(`$${data.shipping.cost.toFixed(2)}`);
+
+                $desc.find('.total > .value').text(
+                    `$${(+data.price + +data.tax + +data.shipping.cost).toFixed(2)}`
+                );
+
+                $desc.find('.quantity > .value').text(data.quantity);
+                $desc.find('.sum > .value').text(
+                    `$${((+data.price + +data.tax + +data.shipping.cost) * data.quantity).toFixed(2)}`
+                );
             }
 
             renderShipping(data) {
