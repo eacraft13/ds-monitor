@@ -84,7 +84,7 @@ router.patch('/refresh', function (req, res) {
                 sold: null,
                 state: listing.sellingStatus[0].sellingState[0],
                 supplies: [],
-                tax: null,
+                tax: 0,
                 title: listing.title[0],
                 visits: null,
                 watchers: listing.listingInfo[0].watchCount ? listing.listingInfo[0].watchCount[0] : 0
@@ -93,24 +93,20 @@ router.patch('/refresh', function (req, res) {
     })
     .then(function (listings) {
         return _.map(listings, function (listing) {
-            return function () {
-                return new Promise(function (reject, resolve) {
-                    request({
-                        body: listing,
-                        json: true,
-                        method: 'post',
-                        uri: 'http://' + config.uri + ':' + config.port + '/listings',
-                    }, function (err, res, body) {
-                        if (err)
-                            return reject(new Error(err));
+            request({
+                body: listing,
+                json: true,
+                method: 'post',
+                uri: 'http://' + config.uri + ':' + config.port + '/listings',
+            }, function (err, res, body) {
+                if (err)
+                    return Promise.reject(new Error(err));
 
-                        if (res.statusCode !== 201 && res.statusCode !== 204)
-                            return reject(new Error(res.errorMessage));
+                if (res.statusCode !== 201 && res.statusCode !== 204)
+                    return Promise.reject(new Error(res.errorMessage));
 
-                        return resolve(body);
-                    });
-                });
-            };
+                return Promise.resolve(body);
+            });
         });
     })
     .then(function (promises) {
