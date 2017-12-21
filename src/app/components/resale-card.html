@@ -61,12 +61,38 @@
         :host > #resale-desc {
             display: inline-flex;
             flex-flow: column nowrap;
-            justify-content: space-around;
+            justify-content: center;
         }
 
         :host > #resale-desc > * {
-            text-align: center;
             font-size: 12px;
+            padding: 4px 2px;
+            text-align: center;
+        }
+
+        :host > #resale-desc > .status {
+            color: #FC5A5D;
+            cursor: pointer;
+            font-size: 18px;
+            left: 0;
+            position: absolute;
+            top: 104px;
+        }
+
+        :host > #resale-desc > .status.active {
+            color: #B1E340;
+        }
+
+        :host > #resale-desc > .link {
+            font-size: 18px;
+            left: 104px;
+            position: absolute;
+            top: 104px;
+        }
+
+        :host > #resale-desc > .link > a {
+            color: #88C7D5;
+            text-decoration: none;
         }
 
         /**
@@ -118,43 +144,62 @@
 
     <div id="resale-image" class="component">
         <img class="image" src="">
+
+        <!-- More -->
         <!-- other images -->
     </div>
 
     <div id="resale-desc" class="component">
         <div class="title"></div>
-        <div class="link"><a href="" target="_blank"></a></div>
-        <!-- item specifics -->
+
+        <div class="link"><a href="" target="_blank"><i class="material-icons">open_in_new</i></a></div>
+        <div class="status"><i class="material-icons">power_settings_new</i></div>
+
+        <!-- Extra -->
         <!-- status (de-activate listing) -->
+
+        <!-- More -->
+        <!-- item specifics -->
     </div>
 
     <div id="resale-price" class="component">
-        Price
-        <!-- quantity -->
+        <!-- Might be able to remove this one -->
+
+        <!-- price -->
         <!-- tax -->
         <!-- shipping cost -->
+        <!-- total -->
+        <!-- quantity -->
+        <!-- sum total -->
+
+        <!-- More -->
+        <!-- reprice -->
     </div>
 
     <div id="resale-shipping" class="component">
-        Shipping
-        <!-- shipping time/service -->
+        <!-- cost -->
+        <!-- service & timeframe -->
         <!-- handling time -->
+        <!-- estimated arrival -->
     </div>
 
     <div id="resale-profit" class="component">
         <div class="price"><span class="label">BIN Price: </span><span class="value"></span></div>
-        <div class="snipe"><span class="label">Snipe Price: </span><span class="value"></span></div>
-        <div class="supply"><span class="label">Supply Price: </span><span class="value"></span></div>
         <!-- eBay fee -->
         <!-- PayPal fee -->
-        <!-- profit -->
-        <!-- profit % -->
-        <!-- undercut $ -->
-        <!-- undercut % -->
+        <!-- total -->
+
+        <!-- Extra -->
+        <!-- snipe price -->
+        <!-- supply price -->
+        <!-- profit $/% -->
+        <!-- undercut $/% -->
     </div>
 
     <div id="resale-snipe" class="component">
         Snipe
+
+        <!-- Extra -->
         <!-- price -->
         <!-- tax -->
         <!-- shipping -->
@@ -165,6 +210,8 @@
 
     <div id="resale-supply" class="component">
         Supply
+
+        <!-- Extra -->
         <!-- price -->
         <!-- tax -->
         <!-- shipping -->
@@ -174,9 +221,11 @@
 
     <div id="resale-hotness" class="component">
         <div class="time"><span class="label">Alive: </span><span class="value"></span></div>
-        <div class="visits"><span class="label">Visits: </span><span class="value"></span></div>
         <div class="watchers"><span class="label">Watchers: </span><span class="value"></span></div>
-        <div class="sold"><span class="label">Sold: </span><span class="value"></span></div>
+
+        <!-- Extra -->
+        <!-- visits -->
+        <!-- sold -->
         <!-- hotness meter -->
         <!-- total profit -->
         <!-- total profit / day -->
@@ -185,6 +234,8 @@
     <div id="resale-refresh" class="component">
         <i class="material-icons">replay</i>
         <!-- last updated time -->
+
+        <!-- Extra -->
         <!-- freshness meter -->
     </div>
 
@@ -278,7 +329,9 @@
 
                 $desc.find('.title').text(data.title || 'N/a');
                 $desc.find('.link > a').attr('href', data.link);
-                $desc.find('.link > a').text(data.eBayId);
+
+                if (data.state.toLowerCase() === 'active')
+                    $desc.find('.status').addClass('active');
             }
 
             renderPrice(data) {
