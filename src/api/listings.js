@@ -77,6 +77,7 @@ router.patch('/refresh', function (req, res) {
     .then(function (result) {
         return _.map(result[0].item, function (listing) {
             return {
+                _ebay: JSON.stringify(listing),
                 dateListed: [{
                     start: listing.listingInfo[0].startTime[0],
                     end: listing.listingInfo[0].endTime[0]

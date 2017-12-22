@@ -39,6 +39,17 @@
             top: -6px;
         }
 
+        :host > .component.error {
+            display: inline-flex;
+        }
+
+        :host > .component > #icon-error {
+            color: #FC5A5D;
+            cursor: help;
+            font-size: 48px;
+            margin: auto;
+        }
+
         :host > #more-info {
             height: 300px;
             width: 100%;
@@ -175,6 +186,13 @@
             font-weight: bold;
         }
 
+        :host > #resale-shipping > .global {
+            color: #B1E340;
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
         /**
          * Profit
          */
@@ -307,8 +325,9 @@
             Between <span class="min"></span> and <span class="max"></span>.
         </div>
 
+        <div class="global"><i class="material-icons">public</i></div>
+
         <!-- More -->
-        <!-- is global -->
         <!-- doesn't ship to -->
     </div>
 
@@ -450,73 +469,115 @@
             renderImage(data) {
                 var $image = $('#resale-image', this.shadowRoot);
 
-                $image.find('.image').attr('src', data.images[0]);
+                try {
+                    $image.find('.image').attr('src', data.images[0]);
+                } catch (e) {
+                    this.renderError(e, $image);
+                }
             }
 
             renderDesc(data) {
                 var $desc = $('#resale-desc', this.shadowRoot);
 
-                $desc.find('.title').text(data.title || 'N/a');
-                $desc.find('.link > a').attr('href', data.link);
+                try {
+                    $desc.find('.title').text(data.title || 'N/a');
+                    $desc.find('.link > a').attr('href', data.link);
 
-                if (data.state.toLowerCase() === 'active')
-                    $desc.find('.status').addClass('active');
+                    if (data.state.toLowerCase() === 'active')
+                        $desc.find('.status').addClass('active');
+                } catch (e) {
+                    this.renderError(e, $desc);
+                }
             }
 
             renderPrice(data) {
-                var $desc = $('#resale-price', this.shadowRoot);
+                var $price = $('#resale-price', this.shadowRoot);
 
-                $desc.find('.price > .value').text(`$${data.price.toFixed(2)}`);
-                $desc.find('.tax > .value').text(`$${data.tax.toFixed(2)}`);
-                $desc.find('.shipping > .value').text(`$${data.shipping.cost.toFixed(2)}`);
+                try {
+                    $price.find('.price > .value').text(`$${(+data.price).toFixed(2)}`);
+                    $price.find('.tax > .value').text(`$${(+data.tax).toFixed(2)}`);
+                    $price.find('.shipping > .value').text(`$${(+data.shipping.cost).toFixed(2)}`);
 
-                $desc.find('.total > .value').text(
-                    `$${(+data.price + +data.tax + +data.shipping.cost).toFixed(2)}`
-                );
+                    $price.find('.total > .value').text(
+                        `$${(+data.price + +data.tax + +data.shipping.cost).toFixed(2)}`
+                    );
 
-                $desc.find('.quantity > .value').text(data.quantity);
-                $desc.find('.sum > .value').text(
-                    `$${((+data.price + +data.tax + +data.shipping.cost) * data.quantity).toFixed(2)}`
-                );
+                    $price.find('.quantity > .value').text(data.quantity);
+                    $price.find('.sum > .value').text(
+                        `$${((+data.price + +data.tax + +data.shipping.cost) * data.quantity).toFixed(2)}`
+                    );
+                } catch (e) {
+                    this.renderError(e, $price);
+                }
             }
 
             renderShipping(data) {
                 var $ship = $('#resale-shipping', this.shadowRoot);
                 var service;
 
-                if (data.shipping.estimatedDelivery.max === 3)
-                    service = 'Expedited';
-                else
-                    service = 'Standard';
+                console.log(typeof data.shipping.cost);
+                try {
+                    if (data.shipping.estimatedDelivery.max === 3)
+                        service = 'Expedited';
+                    else
+                        service = 'Standard';
 
-                $ship.find('.cost > .value').text(`$${data.shipping.cost.toFixed(2)}`);
+                    $ship.find('.cost > .value').text(`$${(+data.shipping.cost).toFixed(2)}`);
 
-                $ship.find('.service > .label').text(service);
-                $ship.find('.service > .value').text(`1 to ${data.shipping.estimatedDelivery.max} days`);
+                    $ship.find('.service > .label').text(service);
+                    $ship.find('.service > .value').text(`1 to ${data.shipping.estimatedDelivery.max} days`);
 
-                $ship.find('.handling-time > .value').text(`${data.shipping.handlingTime} days`);
+                    $ship.find('.handling-time > .value').text(`${data.shipping.handlingTime} days`);
 
-                $ship.find('.estimated-arrival > .min').text(
-                    moment().add(data.shipping.estimatedDelivery.min, 'days').format('ddd, Do')
-                );
-                $ship.find('.estimated-arrival > .max').text(
-                    moment().add(data.shipping.estimatedDelivery.max, 'days').format('ddd, Do')
-                );
+                    $ship.find('.estimated-arrival > .min').text(
+                        moment().add(
+                            +data.shipping.estimatedDelivery.min + +data.shipping.handlingTime,
+                            'days'
+                        ).format('ddd, Do')
+                    );
+                    $ship.find('.estimated-arrival > .max').text(
+                        moment().add(
+                            +data.shipping.estimatedDelivery.max + +data.shipping.handlingTime,
+                            'days'
+                        ).format('ddd, Do')
+                    );
+
+                    if (!!!data.shipping.isGlobal)
+                        $ship.find('.global').hide();
+                } catch (e) {
+                    this.renderError(e, $ship);
+                }
             }
 
             renderProfit(data) {
                 var $profit = $('#resale-profit', this.shadowRoot);
 
-                $profit.find('.price > .value').text(`$${data.price.toFixed(2)}`);
-                $profit.find('.snipe > .value').text(`$${data.price.toFixed(2)}`);
-                $profit.find('.supply > .value').text(`$${data.price.toFixed(2)}`);
+                try {
+                    $profit.find('.price > .value').text(`$${data.price.toFixed(2)}`);
+                    $profit.find('.snipe > .value').text(`$${data.price.toFixed(2)}`);
+                    $profit.find('.supply > .value').text(`$${data.price.toFixed(2)}`);
+                } catch (e) {
+                    this.renderError(e, $profit);
+                }
             }
 
             renderSnipe(data) {
+                var $snipe = $('#resale-snipe', this.shadowRoot);
+
+                try {
+                } catch (e) {
+                    this.renderError(e, $snipe);
+                }
 
             }
 
             renderSupply(data) {
+                var $supply = $('#resale-supply', this.shadowRoot);
+
+                try {
+                } catch (e) {
+                    this.renderError(e, $supply);
+                }
 
             }
 
@@ -524,10 +585,14 @@
                 var $hotness = $('#resale-hotness', this.shadowRoot);
                 var resaleDate = data.dateListed[data.dateListed.length - 1].start;
 
-                $hotness.find('.time > .value').text(moment(resaleDate).from(moment(), true));
-                $hotness.find('.visits > .value').text(data.visits);
-                $hotness.find('.watchers > .value').text(data.watchers);
-                $hotness.find('.sold > .value').text(data.sold);
+                try {
+                    $hotness.find('.time > .value').text(moment(resaleDate).from(moment(), true));
+                    $hotness.find('.visits > .value').text(data.visits);
+                    $hotness.find('.watchers > .value').text(data.watchers);
+                    $hotness.find('.sold > .value').text(data.sold);
+                } catch (e) {
+                    this.renderError(e, $hotness);
+                }
             }
 
             renderRefresh(data) {
@@ -538,6 +603,15 @@
                 var $more = $('#more-info', this.shadowRoot);
 
                 $more.text(section);
+            }
+
+            renderError(err, $component) {
+                $component
+                .empty()
+                .addClass('error')
+                .append(
+                    `<i id="icon-error" class="material-icons" title="${err}">sync_problem</i>`
+                );
             }
 
         }
