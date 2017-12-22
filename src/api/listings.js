@@ -8,64 +8,6 @@ var express = require('express'),
     router = express.Router();
 var request = require('request');
 
-// eBay api payload
-// {
-//     "itemId":["292365480201"],
-//     "title":["New Oversize Embroidered Western Texas Lone Star Bedding Comforter Set."],
-//     "globalId":["EBAY-US"],
-//     "primaryCategory":[{
-//         "categoryId":["45462"],
-//         "categoryName":["Comforters & Sets"]
-//     }],
-//     "galleryURL":["http://thumbs2.ebaystatic.com/pict/292365480201404000000001_1.jpg"],
-//     "viewItemURL":["http://www.ebay.com/itm/New-Oversize-Embroidered-Western-Texas-Lone-Star-Bedding-Comforter-Set-/292365480201?var=591249780274"],
-//     "paymentMethod":["PayPal"],
-//     "autoPay":["true"],
-//     "postalCode":["52338"],
-//     "location":["Swisher,IA,USA"],
-//     "country":["US"],
-//     "shippingInfo":[{
-//         "shippingServiceCost":[{
-//             "@currencyId":"USD",
-//             "__value__":"0.0"
-//         }],
-//         "shippingType":["Free"],
-//         "shipToLocations":["Worldwide"],
-//         "expeditedShipping":["true"],
-//         "oneDayShippingAvailable":["false"],
-//         "handlingTime":["3"]
-//     }],
-//     "sellingStatus":[{
-//         "currentPrice":[{
-//             "@currencyId":"USD",
-//             "__value__":"166.37"
-//         }],
-//         "convertedCurrentPrice":[{
-//             "@currencyId":"USD",
-//             "__value__":"166.37"
-//         }],
-//         "sellingState":["Active"],
-//         "timeLeft":["P18DT16H59M7S"]
-//     }],
-//     "listingInfo":[{
-//         "bestOfferEnabled":["false"],
-//         "buyItNowAvailable":["false"],
-//         "startTime":["2017-12-10T13:17:35.000Z"],
-//         "endTime":["2018-01-09T13:17:35.000Z"],
-//         "listingType":["FixedPrice"],
-//         "gift":["false"],
-//         "watchCount":["1"]
-//     }],
-//     "returnsAccepted":["true"],
-//     "condition":[{
-//         "conditionId":["1000"],
-//         "conditionDisplayName":["New with tags"]
-//     }],
-//     "isMultiVariationListing":["true"],
-//     "topRatedListing":["false"]
-// }
-
-
 /**
  * Refresh listing(s)
  */
