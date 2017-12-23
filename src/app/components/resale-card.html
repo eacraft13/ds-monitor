@@ -50,6 +50,13 @@
             margin: auto;
         }
 
+        :host > .component > .symbol {
+            color: #BFBFBF;
+            left: -5px;
+            position: absolute;
+            top: -5px;
+        }
+
         :host > #more-info {
             height: 300px;
             width: 100%;
@@ -75,7 +82,7 @@
             justify-content: center;
         }
 
-        :host > #resale-desc > * {
+        :host > #resale-desc > *:not(header) {
             font-size: 12px;
             padding: 4px 2px;
             text-align: center;
@@ -190,7 +197,7 @@
             color: #B1E340;
             left: 0;
             position: absolute;
-            top: 0;
+            top: 104px;
         }
 
         /**
@@ -276,6 +283,8 @@
     </style>
 
     <div id="resale-image" class="component">
+        <header class="symbol"><i class="material-icons">burst_mode</i></header>
+
         <img class="image" src="">
 
         <!-- More -->
@@ -283,6 +292,8 @@
     </div>
 
     <div id="resale-desc" class="component">
+        <header class="symbol"><i class="material-icons">link</i></header>
+
         <div class="title"></div>
 
         <div class="link"><a href="" target="_blank"><i class="material-icons">open_in_new</i></a></div>
@@ -296,7 +307,7 @@
     </div>
 
     <div id="resale-price" class="component">
-        <!-- Might be able to remove this one -->
+        <header class="symbol"><i class="material-icons">attach_money</i></header>
 
         <div class="price variable">
             <div class="icon"></div>
@@ -343,6 +354,8 @@
     </div>
 
     <div id="resale-shipping" class="component">
+        <header class="symbol"><i class="material-icons">local_shipping</i></header>
+
         <div class="cost">
             <div class="label">Cost</div>:
             <div class="value"></div>
@@ -367,6 +380,8 @@
     </div>
 
     <div id="resale-profit" class="component">
+        <header class="symbol"><i class="material-icons">monetization_on</i></header>
+
         <div class="price">
             <div class="label">BIN Price:</div>
             <div class="value"></div>
@@ -405,7 +420,7 @@
     </div>
 
     <div id="resale-snipe" class="component">
-        Snipe
+        <header class="symbol"><i class="material-icons">watch</i></header>
 
         <!-- Extra -->
         <!-- price -->
@@ -417,7 +432,7 @@
     </div>
 
     <div id="resale-supply" class="component">
-        Supply
+        <header class="symbol"><i class="material-icons">local_grocery_store</i></header>
 
         <!-- Extra -->
         <!-- price -->
@@ -428,6 +443,8 @@
     </div>
 
     <div id="resale-hotness" class="component">
+        <header class="symbol"><i class="material-icons">star_border</i></header>
+
         <div class="time"><span class="label">Alive: </span><span class="value"></span></div>
         <div class="watchers"><span class="label">Watchers: </span><span class="value"></span></div>
 
@@ -440,6 +457,8 @@
     </div>
 
     <div id="resale-refresh" class="component">
+        <header class="symbol"><i class="material-icons">redo</i></header>
+
         <i class="material-icons">replay</i>
         <!-- last updated time -->
 
