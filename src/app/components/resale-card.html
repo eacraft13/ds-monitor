@@ -220,7 +220,15 @@
 
         :host > #resale-profit > .profit-price > div > div {
             display: inline-block;
-            width: 30%;
+            width: 31%;
+        }
+
+        :host > #resale-profit > .profit-price > div:first-child > div {
+            cursor: default;
+        }
+
+        :host > #resale-profit > .profit-price > div:not(:first-child) > div {
+            cursor: help;
         }
 
         :host > #resale-profit > .target-price {
@@ -371,14 +379,14 @@
                 <div>10%</div>
             </div>
             <div class="no-tax">
-                <div></div>
-                <div></div>
-                <div></div>
+                <div title="0% tax"></div>
+                <div title="0% tax"></div>
+                <div title="0% tax"></div>
             </div>
             <div class="with-tax">
-                <div></div>
-                <div></div>
-                <div></div>
+                <div title="8.45% tax"></div>
+                <div title="8.45% tax"></div>
+                <div title="8.45% tax"></div>
             </div>
         </div>
 
@@ -607,14 +615,14 @@
                 try {
                     $profit.find('.price > .value').text(`$${price}`);
 
-                    $profit.find('.profit-price > .no-tax > div:first-child')
+                    $profit.find('.profit-price > .no-tax > div:nth-child(1)')
                         .text(`$${supplyPriceByProfitPercent(-10, 0)}`);
                     $profit.find('.profit-price > .no-tax > div:nth-child(2)')
                         .text(`$${supplyPriceByProfitPercent(0, 0)}`);
                     $profit.find('.profit-price > .no-tax > div:last-child')
                         .text(`$${supplyPriceByProfitPercent(10, 0)}`);
 
-                    $profit.find('.profit-price > .with-tax > div:first-child')
+                    $profit.find('.profit-price > .with-tax > div:nth-child(1)')
                         .text(`$${supplyPriceByProfitPercent(-10, 8.45)}`);
                     $profit.find('.profit-price > .with-tax > div:nth-child(2)')
                         .text(`$${supplyPriceByProfitPercent(0, 8.45)}`);
