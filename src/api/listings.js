@@ -48,9 +48,10 @@ router.patch('/refresh', function (req, res) {
                     start: moment(shopping.StartTime).utc(),
                 }],
                 eBayId: shopping.ItemID,
-                images: [ shopping.GalleryURL ].concat(shopping.PictureURL),
+                images: [ finding.galleryURL[0] ].concat(shopping.PictureURL),
                 link: shopping.ViewItemURLForNaturalSearch,
                 price: shopping.CurrentPrice.Value,
+                quantity: shopping.Quantity,
                 rank: {
                     isTopRated: finding.topRatedListing[0],
                 },
@@ -78,19 +79,21 @@ router.patch('/refresh', function (req, res) {
     })
     .then(function (listings) {
         return _.map(listings, function (listing) {
-            request({
-                body: listing,
-                json: true,
-                method: 'post',
-                uri: 'http://' + config.uri + ':' + config.port + '/listings',
-            }, function (err, res, body) {
-                if (err)
-                    return Promise.reject(new Error(err));
+            return new Promise(function (resolve, reject) {
+                request({
+                    body: listing,
+                    json: true,
+                    method: 'post',
+                    uri: 'http://' + config.uri + ':' + config.port + '/listings',
+                }, function (err, res, body) {
+                    if (err)
+                        return reject(new Error(err));
 
-                if (res.statusCode !== 201 && res.statusCode !== 204)
-                    return Promise.reject(new Error(res.errorMessage));
+                    if (res.statusCode !== 201 && res.statusCode !== 204)
+                        return reject(new Error(JSON.stringify(body)));
 
-                return Promise.resolve(body);
+                    return resolve(body);
+                });
             });
         });
     })

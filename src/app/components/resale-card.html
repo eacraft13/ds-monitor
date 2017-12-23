@@ -199,12 +199,39 @@
         :host > #resale-profit {
             display: inline-flex;
             flex-flow: column nowrap;
-            justify-content: space-around;
+            justify-content: center;
         }
 
-        :host > #resale-profit > * {
-            font-size: 11px;
-            text-align: left;
+        :host > #resale-profit > .price {
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        :host > #resale-profit > .profit-price > div {
+            font-size: 10px;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        :host > #resale-profit > .profit-price > div:first-child > div {
+            border-bottom: 1px solid #333333;
+        }
+
+        :host > #resale-profit > .profit-price > div > div {
+            display: inline-block;
+            width: 30%;
+        }
+
+        :host > #resale-profit > .target-price {
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        :host > #resale-profit > .price > div,
+        :host > #resale-profit > .target-price > div {
+            margin: 1px;
         }
 
         /**
@@ -332,16 +359,41 @@
     </div>
 
     <div id="resale-profit" class="component">
-        <div class="price"><span class="label">BIN Price: </span><span class="value"></span></div>
-        <!-- eBay fee -->
-        <!-- PayPal fee -->
-        <!-- total -->
+        <div class="price">
+            <div class="label">BIN Price:</div>
+            <div class="value"></div>
+        </div>
+
+        <div class="profit-price">
+            <div class="head">
+                <div>-10%</div>
+                <div>even</div>
+                <div>10%</div>
+            </div>
+            <div class="no-tax">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="with-tax">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+
+        <div class="target-price">
+            <div class="label">Target Price:</div>
+            <div class="value"></div>
+        </div>
 
         <!-- Extra -->
-        <!-- snipe price -->
-        <!-- supply price -->
-        <!-- profit $/% -->
-        <!-- undercut $/% -->
+        <!-- most sold snipe price & undercut $/% -->
+        <!-- best supply price & profit $/% -->
+
+        <!-- More -->
+        <!-- eBay fee -->
+        <!-- PayPal fee -->
     </div>
 
     <div id="resale-snipe" class="component">
@@ -515,7 +567,6 @@
                 var $ship = $('#resale-shipping', this.shadowRoot);
                 var service;
 
-                console.log(typeof data.shipping.cost);
                 try {
                     if (data.shipping.estimatedDelivery.max === 3)
                         service = 'Expedited';
@@ -551,13 +602,42 @@
 
             renderProfit(data) {
                 var $profit = $('#resale-profit', this.shadowRoot);
+                var price = data.price.toFixed(2);
 
                 try {
-                    $profit.find('.price > .value').text(`$${data.price.toFixed(2)}`);
-                    $profit.find('.snipe > .value').text(`$${data.price.toFixed(2)}`);
-                    $profit.find('.supply > .value').text(`$${data.price.toFixed(2)}`);
+                    $profit.find('.price > .value').text(`$${price}`);
+
+                    $profit.find('.profit-price > .no-tax > div:first-child')
+                        .text(`$${supplyPriceByProfitPercent(-10, 0)}`);
+                    $profit.find('.profit-price > .no-tax > div:nth-child(2)')
+                        .text(`$${supplyPriceByProfitPercent(0, 0)}`);
+                    $profit.find('.profit-price > .no-tax > div:last-child')
+                        .text(`$${supplyPriceByProfitPercent(10, 0)}`);
+
+                    $profit.find('.profit-price > .with-tax > div:first-child')
+                        .text(`$${supplyPriceByProfitPercent(-10, 8.45)}`);
+                    $profit.find('.profit-price > .with-tax > div:nth-child(2)')
+                        .text(`$${supplyPriceByProfitPercent(0, 8.45)}`);
+                    $profit.find('.profit-price > .with-tax > div:last-child')
+                        .text(`$${supplyPriceByProfitPercent(10, 8.45)}`);
+
+                    $profit.find('.target-price > .value')
+                        .text(`$${supplyPriceByProfitPercent(10, 8.45)}`);
                 } catch (e) {
                     this.renderError(e, $profit);
+                }
+
+                function supplyPriceByProfitPercent(profitPercent, taxPercent) {
+                    var eBayFee = price * 0.0915;
+                    var payPalFee = price * 0.029 + 0.3;
+                    var profit = price * (profitPercent / 100);
+                    var supply;
+                    var tax = 0;
+
+                    supply = (price - eBayFee - payPalFee - profit).toFixed(2);
+                    tax = supply * (taxPercent / 100);
+
+                    return (price - eBayFee - payPalFee - profit - tax).toFixed(2);
                 }
             }
 
