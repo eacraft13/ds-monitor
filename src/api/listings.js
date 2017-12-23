@@ -6,6 +6,7 @@ var credentials = require('../../private/ebay'),
     ebay = require('ebay-dev-api')(credentials);
 var express = require('express'),
     router = express.Router();
+var moment = require('moment');
 var request = require('request');
 
 /**
@@ -16,41 +17,62 @@ router.patch('/refresh', function (req, res) {
     .findItemsIneBayStores({
         storeName: credentials.storeName
     })
-    .then(function (result) {
-        return _.map(result[0].item, function (listing) {
+    .then(function (x) {
+        var ids = _(x[0].item)
+            .map(function (itemX) {
+                return itemX.itemId[0];
+            })
+            .uniq()
+            .valueOf();
+
+        return ebay.shopping.getMultipleItems(ids)
+            .then(function (y) {
+                return _.map(x[0].item, function (itemX) {
+                    var itemY = _.find(y, { ItemID: itemX.itemId[0] });
+
+                    return {
+                        '@ebay_finding': itemX,
+                        '@ebay_shopping': itemY
+                    };
+                });
+            });
+    })
+    .then(function (items) {
+        return _.map(items, function (item) {
+            var finding = item['@ebay_finding'];
+            var shopping = item['@ebay_shopping'];
+
             return {
-                _ebay: JSON.stringify(listing),
                 dateListed: [{
-                    start: listing.listingInfo[0].startTime[0],
-                    end: listing.listingInfo[0].endTime[0]
+                    end: moment(shopping.EndTime).utc(),
+                    start: moment(shopping.StartTime).utc(),
                 }],
-                eBayId: listing.itemId[0],
-                images: [ listing.galleryURL[0] ],
-                link: listing.viewItemURL[0],
-                price: listing.sellingStatus[0].currentPrice[0].__value__,
+                eBayId: shopping.ItemID,
+                images: [ shopping.GalleryURL ].concat(shopping.PictureURL),
+                link: shopping.ViewItemURLForNaturalSearch,
+                price: shopping.CurrentPrice.Value,
                 rank: {
-                    product: null,
-                    title: null,
-                    topRated: listing.topRatedListing[0]
+                    isTopRated: finding.topRatedListing[0],
                 },
                 shipping: {
-                    cost: listing.shippingInfo[0].shippingServiceCost[0].__value__,
+                    cost: +finding.shippingInfo[0].shippingServiceCost[0].__value__,
                     estimatedDelivery: {
-                        max: +listing.shippingInfo[0].handlingTime[0] + listing.shippingInfo[0].expeditedShipping === 'true' ? 3 : 5,
-                        min: +listing.shippingInfo[0].handlingTime[0] + listing.shippingInfo[0].expeditedShipping === 'true' ? 1 : 3,
+                        max: +finding.shippingInfo[0].handlingTime[0] + finding.shippingInfo[0].expeditedShipping === 'true' ? 3 : 5,
+                        min: +finding.shippingInfo[0].handlingTime[0] + finding.shippingInfo[0].expeditedShipping === 'true' ? 1 : 3,
                     },
-                    handlingTime: listing.shippingInfo[0].handlingTime[0],
-                    isGlobal: listing.shippingInfo[0].shipToLocations[0] === 'Worldwide',
-                    service: listing.shippingInfo[0].shippingType[0].replace(/([a-z])([A-Z])/g, '$1 $2'),
+                    excludes: shopping.ExcludeShipToLocation,
+                    handlingTime: shopping.HandlingTime,
+                    isGlobal: shopping.GlobalShipping,
+                    service: finding.shippingInfo[0].shippingType[0].replace(/([a-z])([A-Z])/g, '$1 $2'),
                 },
                 snipes: [],
-                sold: null,
-                state: listing.sellingStatus[0].sellingState[0],
+                sold: shopping.QuantitySold,
+                state: shopping.ListingStatus,
                 supplies: [],
                 tax: 0,
-                title: listing.title[0],
-                visits: null,
-                watchers: listing.listingInfo[0].watchCount ? listing.listingInfo[0].watchCount[0] : 0
+                title: shopping.Title,
+                visits: shopping.HitCount,
+                watchers: finding.listingInfo[0].watchCount ? +finding.listingInfo[0].watchCount[0] : 0,
             };
         });
     })
