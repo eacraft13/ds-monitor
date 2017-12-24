@@ -65,6 +65,10 @@
         /**
          * Image
          */
+        :host > #resale-image {
+            display: inline-flex;
+        }
+
         :host > #resale-image > .image {
             border-radius: inherit;
             display: block;
@@ -117,7 +121,7 @@
          * Price
          */
         :host > #resale-price {
-            font-size: 11px;
+            font-size: 12px;
         }
 
         :host > #resale-price > .divide {
@@ -128,7 +132,7 @@
             margin: 4px;
         }
 
-        :host > #resale-price > div:first-child {
+        :host > #resale-price > div:nth-child(2) {
             margin-top: 14px;
         }
 
@@ -252,15 +256,21 @@
         /**
          * Hotness
          */
-        :host > #resale-hotness {
-            display: inline-flex;
-            flex-flow: column nowrap;
-            justify-content: space-evenly;
+        :host > #resale-hotness > .total {
+            font-size: 12px;
+            margin-top: 16px;
+            text-align: center;
         }
 
-        :host > #resale-hotness > * {
-            font-size: 11px;
-            text-align: left;
+        :host > #resale-hotness > .per-day {
+            font-size: 10px;
+            margin: 16px auto;
+            text-align: center;
+        }
+
+        :host > #resale-hotness > .per-day > div:first-child {
+            border-bottom: 1px solid #333333;
+            margin: 4px 28px;
         }
 
         /**
@@ -272,13 +282,21 @@
             justify-content: center;
         }
 
-        :host > #resale-refresh > i {
+        :host > #resale-refresh > .button > i {
             cursor: pointer;
             font-size: 70px;
         }
 
-        :host > #resale-refresh > i:hover {
+        :host > #resale-refresh > .button > i:hover {
             opacity: .7;
+        }
+
+        :host > #resale-refresh > .last-updated {
+            color: #BFBFBF;
+            font-size: 7px;
+            left: 21px;
+            position: absolute;
+            top: 2px;
         }
     </style>
 
@@ -445,8 +463,22 @@
     <div id="resale-hotness" class="component">
         <header class="symbol"><i class="material-icons">star_border</i></header>
 
-        <div class="time"><span class="label">Alive: </span><span class="value"></span></div>
-        <div class="watchers"><span class="label">Watchers: </span><span class="value"></span></div>
+        <div class="total">
+            <span class="visits"></span> visits, <span class="watchers"></span> watchers, and <span class="sold"></span> sold since <span class="time-active"></span>.
+        </div>
+
+        <div class="per-day">
+            <div>Per day:</div>
+            <div class="visits">
+                <span></span> visits
+            </div>
+            <div class="watchers">
+                <span></span> watchers
+            </div>
+            <div class="sold">
+                <span></span> sold
+            </div>
+        </div>
 
         <!-- Extra -->
         <!-- visits -->
@@ -459,8 +491,9 @@
     <div id="resale-refresh" class="component">
         <header class="symbol"><i class="material-icons">redo</i></header>
 
-        <i class="material-icons">replay</i>
-        <!-- last updated time -->
+        <div class="button"><i class="material-icons">replay</i></div>
+
+        <div class="last-updated">Last updated: <span></span></div>
 
         <!-- Extra -->
         <!-- freshness meter -->
@@ -690,20 +723,32 @@
 
             renderHotness(data) {
                 var $hotness = $('#resale-hotness', this.shadowRoot);
+                var daysAlive;
                 var resaleDate = data.dateListed[data.dateListed.length - 1].start;
 
                 try {
-                    $hotness.find('.time > .value').text(moment(resaleDate).from(moment(), true));
-                    $hotness.find('.visits > .value').text(data.visits);
-                    $hotness.find('.watchers > .value').text(data.watchers);
-                    $hotness.find('.sold > .value').text(data.sold);
+                    $hotness.find('.total > .visits').text(data.visits);
+                    $hotness.find('.total > .watchers').text(data.watchers);
+                    $hotness.find('.total > .sold').text(data.sold);
+                    $hotness.find('.total > .time-active').text(moment(resaleDate).fromNow());
+
+                    daysAlive = moment.duration(moment().diff(moment(resaleDate))).asDays();
+                    $hotness.find('.per-day > .visits > span').text((data.visits / daysAlive).toFixed(5));
+                    $hotness.find('.per-day > .watchers > span').text((data.watchers / daysAlive).toFixed(5));
+                    $hotness.find('.per-day > .sold > span').text((data.sold / daysAlive).toFixed(5));
                 } catch (e) {
                     this.renderError(e, $hotness);
                 }
             }
 
             renderRefresh(data) {
+                var $refresh = $('#resale-refresh', this.shadowRoot);
 
+                try {
+                    $refresh.find('.last-updated > span').text(moment(data.updatedAt).fromNow());
+                } catch (e) {
+                    this.renderError(e, $refresh);
+                }
             }
 
             renderMoreInfo(section, data) {
