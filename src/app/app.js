@@ -63,6 +63,38 @@ $(function () {
     });
 
     /**
+     * Filter search
+     */
+    $('.dashboard > .search > input')
+    .change(function () {
+        var $cards = $resales.find('resale-card');
+        var filter = $(this).val();
+
+        if (filter) {
+            $cards
+            .filter(function () {
+                if ($(this).attr('title'))
+                    return $(this).attr('title').toUpperCase().indexOf(filter.toUpperCase()) > -1;
+                return false;
+            })
+            .slideDown();
+
+            $cards
+            .filter(function () {
+                if ($(this).attr('title'))
+                    return $(this).attr('title').toUpperCase().indexOf(filter.toUpperCase()) === -1;
+                return true;
+            })
+            .slideUp();
+        } else {
+            $cards.slideUp();
+        }
+    })
+    .keyup(function () {
+        $(this).change();
+    });
+
+    /**
      * Repopulate resale cards
      */
     function repopulate(resales) {

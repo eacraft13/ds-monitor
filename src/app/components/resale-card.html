@@ -541,6 +541,11 @@
                 var $more = $('#more-info', this.shadowRoot);
                 var self = this;
 
+                if (!data)
+                    return $(this).hide(); // todo: handle this better
+
+                $(this).attr('title', data.title);
+
                 this.renderImage(data);
                 this.renderDesc(data);
                 this.renderPrice(data);
