@@ -87,7 +87,7 @@ $(function () {
             })
             .slideUp();
         } else {
-            $cards.slideUp();
+            $cards.slideDown();
         }
     })
     .keyup(function () {
