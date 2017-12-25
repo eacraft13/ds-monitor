@@ -206,9 +206,40 @@ header > .underbar {
 }
 
 /**
+ * Dashboard
+ */
+.dashboard {
+    height: 40px;
+    margin: 4px 20px 0 80px;
+}
+
+.dashboard > .search {
+    margin-top: 12px;
+    position: relative;
+}
+
+.dashboard > .search > i {
+    color: #757575;
+    font-size: 20px;
+    left: 9px;
+    position: absolute;
+    top: 9px
+}
+
+.dashboard > .search > input {
+    border-radius: 18px;
+    color: #333333;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    height: 20px;
+    padding: 6px 6px 6px 30px;
+    width: 240px;
+}
+
+/**
  * Resales list
  */
 .resales {
-    margin: 10px 0 0 80px;
+    margin: 6px 0 0 80px;
     width: 92%;
 }
