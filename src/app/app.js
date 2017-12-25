@@ -65,33 +65,21 @@ $(function () {
     /**
      * Filter search
      */
-    $('.dashboard > .search > input')
-    .change(function () {
+    $('.dashboard > .search > input').on('keyup', function () {
         var $cards = $resales.find('resale-card');
         var filter = $(this).val();
 
         if (filter) {
-            $cards
-            .filter(function () {
-                if ($(this).attr('title'))
-                    return $(this).attr('title').toUpperCase().indexOf(filter.toUpperCase()) > -1;
-                return false;
-            })
-            .slideDown();
+            $cards.filter(function () {
+                return containsAll(filter.split(' '), $(this).attr('title'));
+            }).slideDown();
 
-            $cards
-            .filter(function () {
-                if ($(this).attr('title'))
-                    return $(this).attr('title').toUpperCase().indexOf(filter.toUpperCase()) === -1;
-                return true;
-            })
-            .slideUp();
+            $cards.filter(function () {
+                return !containsAll(filter.split(' '), $(this).attr('title'));
+            }).slideUp();
         } else {
             $cards.slideDown();
         }
-    })
-    .keyup(function () {
-        $(this).change();
     });
 
     /**
@@ -108,6 +96,23 @@ $(function () {
                 store-uri="${storeUri}">
                 </resale-card>`);
         });
+    }
+
+    /**
+     * Check if all values in array are in a string
+     */
+    function containsAll(needles, haystack, isCaseSensitive) {
+        var i;
+        var flag = isCaseSensitive ? '' : 'i';
+
+        if (!haystack)
+            return false;
+
+        for (i = 0; i < needles.length; i++)
+            if (!(new RegExp(needles[i], flag)).test(haystack))
+                return false;
+
+        return true;
     }
 
 });
