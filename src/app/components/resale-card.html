@@ -92,6 +92,10 @@
             text-align: center;
         }
 
+        :host > #resale-desc > .variation {
+            font-size: 8px;
+        }
+
         :host > #resale-desc > .status {
             color: #FC5A5D;
             cursor: pointer;
@@ -316,6 +320,8 @@
 
         <div class="link"><a href="" target="_blank"><i class="material-icons">open_in_new</i></a></div>
         <div class="status"><i class="material-icons">power_settings_new</i></div>
+
+        <div class="variation"></div>
 
         <!-- Extra -->
         <!-- status (de-activate listing) -->
@@ -599,6 +605,12 @@
                 try {
                     $desc.find('.title').text(data.title || 'N/a');
                     $desc.find('.link > a').attr('href', data.link);
+
+                    $.each(data.variationSpecifics, function (key, val) {
+                        $desc
+                        .find('.variation')
+                        .append(`<div><span>${key}:</span> <span>${val}</span></div>`);
+                    });
 
                     if (data.state.toLowerCase() === 'active')
                         $desc.find('.status').addClass('active');
