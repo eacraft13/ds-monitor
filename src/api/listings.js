@@ -6,6 +6,7 @@ var credentials = require('../../private/ebay'),
     ebay = require('ebay-dev-api')(credentials);
 var express = require('express'),
     router = express.Router();
+var hash = require('object-hash');
 var moment = require('moment');
 var request = require('request');
 
@@ -38,9 +39,44 @@ router.patch('/refresh', function (req, res) {
             });
     })
     .then(function (items) {
-        return _.map(items, function (item) {
+        return _.uniqBy(items, function (item) { // remove dups
+            return item['@ebay_shopping'].ItemID;
+        });
+    })
+    .then(function (items) {
+        return _(items) // add variations
+            .map(function (item) {
+                var shopping = item['@ebay_shopping'];
+                var variations = [];
+
+                if (shopping.Variations) {
+                    _.each(shopping.Variations.Variation, function (variation) {
+                        variations.push(_.assign({}, item, {
+                            price: variation.StartPrice.Value,
+                            quantity: variation.Quantity,
+                            sold: variation.SellingStatus.QuantitySold,
+                            variationSpecifics: variation.VariationSpecifics
+                        }));
+                    });
+                } else {
+                    variations.push(item);
+                }
+
+                return variations;
+            })
+            .flatten()
+            .valueOf();
+    })
+    .then(function (items) {
+        return _.map(items, function (item, i) {
             var finding = item['@ebay_finding'];
+            var id;
             var shopping = item['@ebay_shopping'];
+
+            if (item.variationSpecifics)
+                id = hash.MD5(item.variationSpecifics);
+            else
+                id = 0;
 
             return {
                 dateListed: [{
@@ -48,10 +84,11 @@ router.patch('/refresh', function (req, res) {
                     start: moment(shopping.StartTime).utc(),
                 }],
                 eBayId: shopping.ItemID,
-                images: [ finding.galleryURL[0] ].concat(shopping.PictureURL),
+                id: `${shopping.ItemID}-${id}`,
+                images: shopping.PictureURL,
                 link: shopping.ViewItemURLForNaturalSearch,
-                price: shopping.CurrentPrice.Value,
-                quantity: shopping.Quantity,
+                price: item.price || shopping.CurrentPrice.Value,
+                quantity: item.quantity || shopping.Quantity,
                 rank: {
                     isTopRated: finding.topRatedListing[0],
                 },
@@ -67,11 +104,13 @@ router.patch('/refresh', function (req, res) {
                     service: finding.shippingInfo[0].shippingType[0].replace(/([a-z])([A-Z])/g, '$1 $2'),
                 },
                 snipes: [],
-                sold: shopping.QuantitySold,
+                sold: item.sold || shopping.QuantitySold,
                 state: shopping.ListingStatus,
                 supplies: [],
                 tax: 0,
+                thumb: shopping.GalleryURL,
                 title: shopping.Title,
+                variationSpecifics: item.variationSpecifics,
                 visits: shopping.HitCount,
                 watchers: finding.listingInfo[0].watchCount ? +finding.listingInfo[0].watchCount[0] : 0,
             };
