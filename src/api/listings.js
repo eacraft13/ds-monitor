@@ -68,7 +68,24 @@ router.patch('/refresh', function (req, res) {
             .valueOf();
     })
     .then(function (items) {
-        return _.map(items, function (item, i) {
+        return _.map(items, function (item) { // clean up variationSpecifics
+            var list;
+
+            if (!item.variationSpecifics)
+                return item;
+
+            list = item.variationSpecifics.NameValueList;
+            item.variationSpecifics = {};
+
+            _.each(list, function (nameValue) {
+                item.variationSpecifics[nameValue.Name] = nameValue.Value[0];
+            });
+
+            return item;
+        });
+    })
+    .then(function (items) {
+        return _.map(items, function (item) {
             var finding = item['@ebay_finding'];
             var id;
             var shopping = item['@ebay_shopping'];
