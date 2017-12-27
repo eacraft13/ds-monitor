@@ -760,9 +760,30 @@
 
             renderRefresh(data) {
                 var $refresh = $('#resale-refresh', this.shadowRoot);
+                var self = this;
+                var storeUri = this.getAttribute('store-uri');
 
                 try {
                     $refresh.find('.last-updated > span').text(moment(data.updatedAt).fromNow());
+                    $refresh.find('.button').on('click', function () {
+                        $.ajax({
+                            url: `/listings/${data.id}/refresh`,
+                            method: 'patch'
+                        })
+                        .done(function () {
+                            return $.ajax({
+                                url: `${storeUri}/resales/${data.id}`,
+                                method: 'get'
+                            });
+                        })
+                        .done(function (data) {
+                            self.render(data);
+                        })
+                        .catch(function (err) {
+                            // todo - make card display error
+                            console.log(err);
+                        })
+                    });
                 } catch (e) {
                     this.renderError(e, $refresh);
                 }

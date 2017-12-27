@@ -6,12 +6,74 @@ var credentials = require('../../private/ebay'),
     ebay = require('ebay-dev-api')(credentials);
 var express = require('express'),
     router = express.Router();
-var hash = require('object-hash');
-var moment = require('moment');
 var request = require('request');
+var resaleUtil = require('../utils/resale');
 
 /**
- * Refresh listing(s)
+ * Sync listings
+ */
+
+/**
+ * Refresh listing
+ */
+router.patch('/:id/refresh', function (req, res) {
+    var itemId = req.params.id.split('-')[0];
+    var specs = req.query.variation; // req.params.id.split('-')[1] -> unhash
+
+    ebay.finding
+    .findItemsIneBayStores({
+        storeName: credentials.storeName
+    })
+    .then(function (findingItems) {
+        return _.find(findingItems[0].item, function (item) {
+            return itemId === item.itemId[0];
+        });
+    })
+    .then(function (findingItem) {
+        return ebay.shopping
+            .getMultipleItems([itemId])
+            .then(function (shoppingItems) {
+                // todo - find specific variation
+                return shoppingItems[0];
+            })
+            .then(function (shoppingItem) {
+                return {
+                    '@ebay_finding': findingItem,
+                    '@ebay_shopping': shoppingItem
+                };
+            });
+    })
+    .then(function (item) {
+        return resaleUtil.createFromFindingAndShopping(item['@ebay_finding'], item['@ebay_shopping']);
+    })
+    .then(function (item) {
+        return new Promise(function (resolve, reject) {
+            request({
+                body: item,
+                json: true,
+                method: 'post',
+                uri: 'http://' + config.uri + ':' + config.port + '/listings',
+            }, function (err, res, body) {
+                if (err)
+                    return reject(new Error(err));
+
+                if (res.statusCode !== 201 && res.statusCode !== 204)
+                    return reject(new Error(JSON.stringify(body)));
+
+                return resolve(body);
+            });
+        });
+    })
+    .then(function (result) {
+        return res.status(204).json(result);
+    })
+    .catch(function (err) {
+        return res.error(err);
+    });
+});
+
+/**
+ * Refresh listings
  */
 router.patch('/refresh', function (req, res) {
     ebay.finding
@@ -44,93 +106,21 @@ router.patch('/refresh', function (req, res) {
         });
     })
     .then(function (items) {
-        return _(items) // add variations
+        return _(items)
             .map(function (item) {
-                var shopping = item['@ebay_shopping'];
-                var variations = [];
-
-                if (shopping.Variations) {
-                    _.each(shopping.Variations.Variation, function (variation) {
-                        variations.push(_.assign({}, item, {
-                            price: variation.StartPrice.Value,
-                            quantity: variation.Quantity,
-                            sold: variation.SellingStatus.QuantitySold,
-                            variationSpecifics: variation.VariationSpecifics
-                        }));
-                    });
-                } else {
-                    variations.push(item);
-                }
-
-                return variations;
+                return resaleUtil.createVariations(item, item['@ebay_finding'], item['@ebay_shopping']);
             })
             .flatten()
             .valueOf();
     })
     .then(function (items) {
-        return _.map(items, function (item) { // clean up variationSpecifics
-            var list;
-
-            if (!item.variationSpecifics)
-                return item;
-
-            list = item.variationSpecifics.NameValueList;
-            item.variationSpecifics = {};
-
-            _.each(list, function (nameValue) {
-                item.variationSpecifics[nameValue.Name] = nameValue.Value[0];
-            });
-
-            return item;
-        });
-    })
-    .then(function (items) {
         return _.map(items, function (item) {
-            var finding = item['@ebay_finding'];
-            var id;
-            var shopping = item['@ebay_shopping'];
-
-            if (item.variationSpecifics)
-                id = hash.MD5(item.variationSpecifics);
-            else
-                id = 0;
-
-            return {
-                dateListed: [{
-                    end: moment(shopping.EndTime).utc(),
-                    start: moment(shopping.StartTime).utc(),
-                }],
-                eBayId: shopping.ItemID,
-                id: `${shopping.ItemID}-${id}`,
-                images: shopping.PictureURL,
-                link: shopping.ViewItemURLForNaturalSearch,
-                price: item.price || shopping.CurrentPrice.Value,
-                quantity: item.quantity || shopping.Quantity,
-                rank: {
-                    isTopRated: finding.topRatedListing[0],
-                },
-                shipping: {
-                    cost: +finding.shippingInfo[0].shippingServiceCost[0].__value__,
-                    estimatedDelivery: {
-                        max: +finding.shippingInfo[0].handlingTime[0] + finding.shippingInfo[0].expeditedShipping === 'true' ? 3 : 5,
-                        min: +finding.shippingInfo[0].handlingTime[0] + finding.shippingInfo[0].expeditedShipping === 'true' ? 1 : 3,
-                    },
-                    excludes: shopping.ExcludeShipToLocation,
-                    handlingTime: shopping.HandlingTime,
-                    isGlobal: shopping.GlobalShipping,
-                    service: finding.shippingInfo[0].shippingType[0].replace(/([a-z])([A-Z])/g, '$1 $2'),
-                },
-                snipes: [],
-                sold: item.sold || shopping.QuantitySold,
-                state: shopping.ListingStatus,
-                supplies: [],
-                tax: 0,
-                thumb: shopping.GalleryURL,
-                title: shopping.Title,
-                variationSpecifics: item.variationSpecifics,
-                visits: shopping.HitCount,
-                watchers: finding.listingInfo[0].watchCount ? +finding.listingInfo[0].watchCount[0] : 0,
-            };
+            return resaleUtil.createFromFindingAndShopping(item['@ebay_finding'], item['@ebay_shopping'], {
+                price: item.price,
+                quantity: item.quantity,
+                sold: item.sold,
+                variationSpecifics: item.variationSpecifics
+            });
         });
     })
     .then(function (listings) {
